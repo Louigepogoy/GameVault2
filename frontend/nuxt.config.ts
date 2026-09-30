@@ -6,6 +6,10 @@ export default defineNuxtConfig({
   ssr: !process.env.CAPACITOR,
 
   devtools: { enabled: false },
+
+  // Hidden source maps only when they'll be uploaded to Sentry (scripts/sentry-sourcemaps.mjs
+  // deletes them afterwards so they're never served to visitors).
+  sourcemap: { server: false, client: process.env.SENTRY_AUTH_TOKEN ? 'hidden' : false },
   // The PWA module's virtual imports don't resolve under Vitest, and tests don't need it.
   modules: [
     ...(process.env.VITEST ? [] : ['@vite-pwa/nuxt']),
@@ -27,6 +31,9 @@ export default defineNuxtConfig({
       apiUrl: 'http://localhost:4000',
       // Overridden by NUXT_PUBLIC_GOOGLE_CLIENT_ID. Empty hides the Google button.
       googleClientId: '',
+      // Error monitoring (optional): NUXT_PUBLIC_SENTRY_DSN, NUXT_PUBLIC_SENTRY_ENVIRONMENT.
+      sentryDsn: '',
+      sentryEnvironment: '',
     },
   },
 

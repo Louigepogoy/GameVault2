@@ -1,10 +1,14 @@
 import request from 'supertest';
+import { afterAll } from 'vitest';
 import app from '../src/index.js';
 import { sql } from '../src/db.js';
 import { applySchema } from '../db/migrate.js';
 
 export { sql };
 export const api = () => request(app);
+
+// Close this file's database connection when its tests are done.
+afterAll(() => sql.end?.());
 
 let schemaReady;
 /** Create the tables once, then empty them. Call in beforeAll of every test file. */

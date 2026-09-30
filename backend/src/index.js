@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { reportError } from './instrument.js'; // first, so error monitoring is ready early
 import express from 'express';
 import cors from 'cors';
 import gamesRouter from './routes/games.js';
@@ -34,14 +35,17 @@ app.use('/api/achievements', requireAuth, achievementsRouter);
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 // Central error handler: always respond with JSON.
-app.use((err, _req, res, _next) => {
+app.use(async (err, req, res, _next) => {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
   const status = err.status || 500;
   // Hide details of unexpected crashes, but keep messages we threw on purpose.
   const expected = err instanceof HttpError;
-  if (!expected) console.error(err);
+  if (!expected) {
+    console.error(err);
+    await reportError(err, req).catch(() => {}); // reporting must never break the response
+  }
   res.status(status).json({ error: expected || status < 500 ? err.message : 'Internal server error' });
 });
 
