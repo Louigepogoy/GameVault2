@@ -2,15 +2,29 @@ export function useApi() {
   const { apiUrl } = useRuntimeConfig().public;
   const baseURL = `${apiUrl.replace(/\/+$/, '')}/api`;
   const { token, logout } = useAuth();
+  const { celebrate } = useAchievements();
+  // The browser's time zone, so time-of-day things (like "Night Owl") use local time.
+  const timeZone = import.meta.client ? Intl.DateTimeFormat().resolvedOptions().timeZone : undefined;
 
   async function request(path, options = {}) {
     const sentToken = token.value;
     try {
-      return await $fetch(path, {
+      const data = await $fetch(path, {
         baseURL,
         ...options,
-        headers: { ...options.headers, ...(sentToken && { Authorization: `Bearer ${sentToken}` }) },
+        headers: {
+          ...options.headers,
+          ...(sentToken && { Authorization: `Bearer ${sentToken}` }),
+          ...(timeZone && { 'X-Timezone': timeZone }),
+        },
       });
+      // Any response can carry newly unlocked achievements: celebrate, then hand back the rest.
+      if (data && typeof data === 'object' && !Array.isArray(data) && 'achievements_unlocked' in data) {
+        const { achievements_unlocked, ...rest } = data;
+        celebrate(achievements_unlocked);
+        return rest;
+      }
+      return data;
     } catch (err) {
       // Expired or invalid session: sign out and go to the login page.
       if (err.response?.status === 401 && sentToken) await logout();
@@ -48,6 +62,7 @@ export function useApi() {
     listSessions: ({ gameId, page = 1, limit = 10 } = {}) =>
       request('/sessions', { query: { ...(gameId && { game_id: gameId }), page, limit } }),
     getHeatmap: ({ weeks = 15, tz } = {}) => request('/stats/heatmap', { query: { weeks, ...(tz && { tz }) } }),
+    getAchievements: () => request('/achievements'),
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),
     deleteGame: (id) => request(`/games/${id}`, { method: 'DELETE' }),

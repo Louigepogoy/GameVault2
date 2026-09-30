@@ -1,5 +1,5 @@
 <script setup>
-import { BarChart3, ChevronRight, Compass, Dices, LogOut } from 'lucide-vue-next';
+import { BarChart3, ChevronRight, Compass, Dices, LogOut, Trophy } from 'lucide-vue-next';
 import { SORT_VALUES } from '~/utils/constants';
 
 const api = useApi();
@@ -107,6 +107,7 @@ const quickActions = computed(() => {
         text: s.backlog ? `Pick from ${plural(s.backlog, 'backlog game')}` : 'Random pick from your backlog',
       },
       { key: 'insights', to: '/insights', icon: BarChart3, color: 'var(--accent-soft)', title: 'Insights', text: 'Hours played, top genres & more' },
+      { key: 'achievements', to: '/achievements', icon: Trophy, color: 'var(--amber)', title: 'Achievements', text: 'Badges for how you play' },
     );
   }
   return list;
@@ -455,7 +456,7 @@ async function toggleFavorite(game) {
 
 @media (min-width: 640px) {
   .quick-actions {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
     gap: 16px;
   }
 }

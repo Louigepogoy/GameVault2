@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { sql } from '../db.js';
-import { HttpError, parseId, parseIntParam, validateNote } from '../validate.js';
+import { HttpError, parseId, parseIntParam, requestTimeZone, validateNote } from '../validate.js';
+import { evaluateAchievements } from '../achievements.js';
 
 const router = Router();
 
@@ -92,7 +93,8 @@ router.post('/:id/stop', wrap(async (req, res) => {
     FROM ended JOIN game ON game.id = ended.game_id
   `;
   if (!row) throw new HttpError(404, 'No running session with that id');
-  res.json({ session: row });
+  const achievements_unlocked = await evaluateAchievements(req.userId, requestTimeZone(req));
+  res.json({ session: row, achievements_unlocked });
 }));
 
 // PATCH /api/sessions/:id { note } -> add or change the note after stopping.

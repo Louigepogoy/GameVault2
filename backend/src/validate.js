@@ -115,6 +115,15 @@ export function validateNote(value) {
   return note || null;
 }
 
+/** The browser's time zone from the X-Timezone header; UTC if missing or invalid. */
+export function requestTimeZone(req) {
+  try {
+    return validateTimeZone(req.get('x-timezone'));
+  } catch {
+    return 'UTC';
+  }
+}
+
 /** An IANA time zone name like "Asia/Manila". */
 export function validateTimeZone(value) {
   if (value === undefined || value === '') return 'UTC';

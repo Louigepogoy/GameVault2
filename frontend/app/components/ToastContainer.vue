@@ -1,8 +1,8 @@
 <script setup>
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-vue-next';
+import { CircleAlert, CircleCheck, Info, Trophy, X } from 'lucide-vue-next';
 
 const { toasts, dismiss, pause, resume, runAction } = useToast();
-const icons = { success: CircleCheck, error: CircleAlert, info: Info };
+const icons = { success: CircleCheck, error: CircleAlert, info: Info, achievement: Trophy };
 </script>
 
 <template>
@@ -76,6 +76,11 @@ const icons = { success: CircleCheck, error: CircleAlert, info: Info };
 
 .toast-error { --c: var(--red); }
 .toast-info { --c: var(--accent-soft); }
+.toast-achievement { --c: var(--amber); }
+
+.toast-achievement .toast-msg {
+  font-weight: 700;
+}
 
 .toast-icon {
   color: var(--c);

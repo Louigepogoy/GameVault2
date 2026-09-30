@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { sql } from '../db.js';
-import { HttpError, STATUSES, parseId, validateGame } from '../validate.js';
+import { HttpError, STATUSES, parseId, requestTimeZone, validateGame } from '../validate.js';
+import { evaluateAchievements } from '../achievements.js';
 
 const router = Router();
 
@@ -68,7 +69,8 @@ router.post('/', wrap(async (req, res) => {
     )
     RETURNING *
   `;
-  res.status(201).json(game);
+  const achievements_unlocked = await evaluateAchievements(req.userId, requestTimeZone(req));
+  res.status(201).json({ ...game, achievements_unlocked });
 }));
 
 router.patch('/:id', wrap(async (req, res) => {
@@ -85,7 +87,10 @@ router.patch('/:id', wrap(async (req, res) => {
     params,
   );
   if (!game) throw new HttpError(404, 'Game not found');
-  res.json(game);
+  // Only status and genre changes can unlock anything here.
+  const achievements_unlocked =
+    'status' in updates || 'genre' in updates ? await evaluateAchievements(req.userId, requestTimeZone(req)) : [];
+  res.json({ ...game, achievements_unlocked });
 }));
 
 router.delete('/:id', wrap(async (req, res) => {

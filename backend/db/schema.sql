@@ -66,3 +66,12 @@ CREATE INDEX IF NOT EXISTS play_sessions_game_idx ON play_sessions (game_id, sta
 
 -- At most one running session per user.
 CREATE UNIQUE INDEX IF NOT EXISTS play_sessions_one_active_idx ON play_sessions (user_id) WHERE ended_at IS NULL;
+
+-- Achievements a user has unlocked. Definitions live in src/achievements.js.
+-- The primary key (user_id first) also serves as the index for the user_id foreign key.
+CREATE TABLE IF NOT EXISTS user_achievements (
+  user_id      INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  code         TEXT NOT NULL,
+  unlocked_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, code)
+);

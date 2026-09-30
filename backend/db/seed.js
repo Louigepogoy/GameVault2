@@ -1,4 +1,5 @@
 import { sql } from '../src/db.js';
+import { evaluateAchievements } from '../src/achievements.js';
 
 const games = [
   {
@@ -140,11 +141,11 @@ const played = await sql`
 `;
 const sessions = [];
 for (let daysAgo = 104; daysAgo >= 1; daysAgo--) {
-  if (rand() < 0.55) continue; // not every day
+  const lateNight = daysAgo === 12; // always one 1 AM session (for the Night Owl achievement)
+  if (!lateNight && rand() < 0.55) continue; // not every day
   const weekend = [0, 6].includes(new Date(Date.now() - daysAgo * 864e5).getDay());
   const game = played[Math.floor(rand() * played.length)];
   const minutes = Math.round((weekend ? 60 + rand() * 180 : 20 + rand() * 90) / 5) * 5;
-  const lateNight = daysAgo === 12; // one 1 AM session
   const startHour = lateNight ? 1 : weekend ? 13 + Math.floor(rand() * 6) : 19 + Math.floor(rand() * 3);
   sessions.push({ game: game.id, daysAgo, startHour, minutes, note: NOTES[Math.floor(rand() * NOTES.length)] });
 }
@@ -160,3 +161,7 @@ for (const x of sessions) {
   `;
 }
 console.log(`Seeded ${sessions.length} play sessions.`);
+
+// Unlock whatever the sample data earns (e.g. First Steps, Night Owl, Marathon).
+const unlocked = await evaluateAchievements(user.id, tz);
+console.log(`Unlocked ${unlocked.length} achievements: ${unlocked.map((x) => x.title).join(', ') || 'none'}.`);
