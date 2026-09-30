@@ -236,15 +236,10 @@ async function addToVault(game, platform = game.platforms[0]) {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(22px, 6vw, 30px);
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.1;
   color: var(--accent-soft);
-  text-shadow: 0 0 18px rgba(139, 92, 246, 0.5);
-}
-
-:global([data-theme='light']) .page-title {
-  text-shadow: none;
 }
 
 .page-sub {
@@ -267,7 +262,7 @@ async function addToVault(game, platform = game.platforms[0]) {
   margin: 0;
   font-family: var(--font-display);
   font-size: 18px;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.01em;
 }
 
 .section-title svg {

@@ -256,14 +256,9 @@ const tooltipLeft = computed(() => {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(22px, 6vw, 30px);
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--accent-soft);
-  text-shadow: 0 0 18px rgba(139, 92, 246, 0.5);
-}
-
-:global([data-theme='light']) .page-title {
-  text-shadow: none;
 }
 
 .main {
@@ -302,10 +297,12 @@ p {
 }
 
 .hero-value {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
   font-size: clamp(48px, 13vw, 64px);
   font-weight: 700;
   line-height: 1;
-  font-variant-numeric: proportional-nums;
+  font-variant-numeric: tabular-nums;
 }
 
 .hero-unit {
@@ -355,6 +352,9 @@ p {
 }
 
 .tile-value {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
   font-size: 34px;
   font-weight: 700;
   line-height: 1.1;

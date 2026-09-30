@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "generate:app": "nuxt generate --dotenv .env.capacitor",
     "cap:sync": "npm run generate:app && npx cap sync",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/favicon.svg",
+    "generate-pwa-assets": "pwa-assets-generator && node scripts/full-bleed-icons.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@vite-pwa/assets-generator": "^1.0.0",
     "@vite-pwa/nuxt": "^1.0.4",
-    "nuxt-quasar-ui": "^3.1.1"
+    "nuxt-quasar-ui": "^3.1.1",
+    "sharp": "^0.35.5"
   }
 }

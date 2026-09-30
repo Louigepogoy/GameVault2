@@ -56,6 +56,7 @@ h2 {
 .progress-percent {
   font-family: var(--font-display);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--accent-soft);
 }
 

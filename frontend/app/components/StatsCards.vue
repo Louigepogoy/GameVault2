@@ -104,6 +104,8 @@ const cards = computed(() => [
   font-family: var(--font-display);
   font-size: clamp(28px, 7vw, 36px);
   font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
 

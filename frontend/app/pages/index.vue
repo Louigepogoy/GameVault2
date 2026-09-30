@@ -1,5 +1,5 @@
 <script setup>
-import { BarChart3, ChevronRight, Compass, Dices, Gamepad2, LogOut } from 'lucide-vue-next';
+import { BarChart3, ChevronRight, Compass, Dices, LogOut } from 'lucide-vue-next';
 import { SORT_VALUES } from '~/utils/constants';
 
 const api = useApi();
@@ -278,15 +278,7 @@ async function toggleFavorite(game) {
 <template>
   <div class="app">
     <header class="header">
-      <div class="brand">
-        <div class="logo-icon">
-          <Gamepad2 :size="28" :stroke-width="2.25" />
-        </div>
-        <div>
-          <h1 class="logo">GameVault</h1>
-          <p class="subtitle">Manage your gaming collection</p>
-        </div>
-      </div>
+      <AppLogo tag="h1" :size="46" tagline="Your games, all in one place" class="brand" />
       <div class="header-actions">
         <span v-if="user" class="user-name">{{ user.name }}</span>
         <ThemeToggle />
@@ -421,44 +413,7 @@ async function toggleFavorite(game) {
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   min-width: 0;
-}
-
-.logo-icon {
-  display: grid;
-  place-items: center;
-  width: 50px;
-  height: 50px;
-  flex-shrink: 0;
-  border-radius: 14px;
-  color: #fff;
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
-  box-shadow: 0 0 24px rgba(139, 92, 246, 0.6);
-}
-
-.logo {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(24px, 6.5vw, 34px);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
-  color: var(--accent-soft);
-  text-shadow: 0 0 18px rgba(139, 92, 246, 0.65), 0 0 36px rgba(139, 92, 246, 0.35);
-}
-
-:global([data-theme='light']) .logo {
-  text-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
-}
-
-.subtitle {
-  margin: 2px 0 0;
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 15px;
 }
 
 .quick-actions {

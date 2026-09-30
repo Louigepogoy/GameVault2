@@ -26,7 +26,7 @@
   --backdrop: rgba(5, 4, 12, 0.7);
   --radius: 16px;
   --radius-sm: 10px;
-  --font-display: 'Orbitron', 'Audiowide', system-ui, sans-serif;
+  --font-display: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Rajdhani', system-ui, -apple-system, 'Segoe UI', sans-serif;
   /* Chart colors for statuses. Stack them in this order (backlog, dropped, playing,
      completed): it passes the colorblind-safety checks in both themes. */

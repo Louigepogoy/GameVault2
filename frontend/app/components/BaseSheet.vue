@@ -179,7 +179,7 @@ h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 18px;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.01em;
 }
 
 .sheet-body {

@@ -124,8 +124,8 @@ const initials = computed(() =>
 .art-initials {
   font-family: var(--font-display);
   font-size: 42px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0;
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }

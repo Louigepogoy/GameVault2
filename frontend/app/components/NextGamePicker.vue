@@ -209,7 +209,7 @@ onBeforeUnmount(() => clearInterval(timer));
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.01em;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
