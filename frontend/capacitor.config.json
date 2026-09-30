@@ -1,0 +1,6 @@
+{
+  "appId": "com.gamevault.app",
+  "appName": "GameVault",
+  "webDir": ".output/public",
+  "backgroundColor": "#0b0a14"
+}
