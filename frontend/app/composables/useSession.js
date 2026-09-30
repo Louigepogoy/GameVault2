@@ -47,7 +47,8 @@ export function useSession() {
       const { session } = await api.stopSession(running.id);
       active.value = null;
       version.value++;
-      if (quiet) toast.success(`Saved ${formatDuration(session.duration_minutes)} on "${session.game_title}".`);
+      if (quiet)
+        toast.success(`Saved ${formatDuration(session.duration_minutes)} on "${session.game_title}".`);
       else justStopped.value = { ...session, game_cover_url: running.game_cover_url };
       return session;
     } catch (err) {

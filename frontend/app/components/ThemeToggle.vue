@@ -27,7 +27,9 @@ const { theme, toggle } = useTheme();
 
 .spin-enter-active,
 .spin-leave-active {
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .spin-enter-from {

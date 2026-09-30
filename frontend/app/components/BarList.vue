@@ -12,7 +12,12 @@ const width = (value) => (max.value ? `${Math.max((value / max.value) * 100, 2)}
 
 <template>
   <ul v-if="items.length" class="bars">
-    <li v-for="(item, i) in items" :key="item.key ?? item.label" class="bar-row" :title="`${item.label}: ${item.display ?? item.value}`">
+    <li
+      v-for="(item, i) in items"
+      :key="item.key ?? item.label"
+      class="bar-row"
+      :title="`${item.label}: ${item.display ?? item.value}`"
+    >
       <span class="bar-label">{{ item.label }}</span>
       <span class="bar-track" aria-hidden="true">
         <Motion

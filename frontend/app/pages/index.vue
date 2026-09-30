@@ -23,7 +23,12 @@ watch(search, (value) => {
 
 watch([debouncedSearch, status, sort, favorites], ([q, s, o, f]) => {
   router.replace({
-    query: { ...(q && { q }), ...(s && { status: s }), ...(o !== 'newest' && { sort: o }), ...(f && { fav: '1' }) },
+    query: {
+      ...(q && { q }),
+      ...(s && { status: s }),
+      ...(o !== 'newest' && { sort: o }),
+      ...(f && { fav: '1' }),
+    },
   });
 });
 
@@ -35,7 +40,12 @@ const {
 } = await useAsyncData(
   'games',
   () =>
-    api.listGames({ q: debouncedSearch.value, status: status.value, sort: sort.value, favorite: favorites.value }),
+    api.listGames({
+      q: debouncedSearch.value,
+      status: status.value,
+      sort: sort.value,
+      favorite: favorites.value,
+    }),
   { watch: [debouncedSearch, status, sort, favorites], default: () => [] },
 );
 
@@ -94,7 +104,14 @@ const NuxtLinkComponent = resolveComponent('NuxtLink');
 const quickActions = computed(() => {
   const s = shownStats.value;
   const list = [
-    { key: 'discover', to: '/discover', icon: Compass, color: 'var(--green)', title: 'Discover games', text: 'Suggestions with download links' },
+    {
+      key: 'discover',
+      to: '/discover',
+      icon: Compass,
+      color: 'var(--green)',
+      title: 'Discover games',
+      text: 'Suggestions with download links',
+    },
   ];
   if (s?.total) {
     list.push(
@@ -106,8 +123,22 @@ const quickActions = computed(() => {
         title: 'What should I play next?',
         text: s.backlog ? `Pick from ${plural(s.backlog, 'backlog game')}` : 'Random pick from your backlog',
       },
-      { key: 'insights', to: '/insights', icon: BarChart3, color: 'var(--accent-soft)', title: 'Insights', text: 'Hours played, top genres & more' },
-      { key: 'achievements', to: '/achievements', icon: Trophy, color: 'var(--amber)', title: 'Achievements', text: 'Badges for how you play' },
+      {
+        key: 'insights',
+        to: '/insights',
+        icon: BarChart3,
+        color: 'var(--accent-soft)',
+        title: 'Insights',
+        text: 'Hours played, top genres & more',
+      },
+      {
+        key: 'achievements',
+        to: '/achievements',
+        icon: Trophy,
+        color: 'var(--amber)',
+        title: 'Achievements',
+        text: 'Badges for how you play',
+      },
     );
   }
   return list;
@@ -289,7 +320,9 @@ async function toggleFavorite(game) {
   setFavorite(game.id, favorite); // optimistic
   try {
     await api.updateGame(game.id, { favorite });
-    toast.success(favorite ? `❤️ "${game.title}" is now a favorite.` : `Removed "${game.title}" from favorites.`);
+    toast.success(
+      favorite ? `❤️ "${game.title}" is now a favorite.` : `Removed "${game.title}" from favorites.`,
+    );
     if (favorites.value) refreshGames(); // drop it from the favorites-only list
     refreshStats();
   } catch (err) {
@@ -297,7 +330,6 @@ async function toggleFavorite(game) {
     toast.error(err.message);
   }
 }
-
 </script>
 
 <template>
@@ -323,7 +355,9 @@ async function toggleFavorite(game) {
           :animate="{ opacity: 1, y: 0 }"
           :transition="{ duration: 0.4, ease: 'easeOut' }"
         >
-          <h2 class="welcome-title">{{ greeting }}, {{ firstName }} <span class="wave" aria-hidden="true">👋</span></h2>
+          <h2 class="welcome-title">
+            {{ greeting }}, {{ firstName }} <span class="wave" aria-hidden="true">👋</span>
+          </h2>
           <p class="welcome-sub">{{ vibe }}</p>
         </Motion>
 
@@ -394,8 +428,12 @@ async function toggleFavorite(game) {
 
     <NextGamePicker :open="pickerOpen" @close="pickerOpen = false" @started="onStarted" />
 
-    <GameDetailSheet :open="detailOpen" :game="detailGame" @close="detailOpen = false" @edit="editFromDetail" />
-
+    <GameDetailSheet
+      :open="detailOpen"
+      :game="detailGame"
+      @close="detailOpen = false"
+      @edit="editFromDetail"
+    />
   </div>
 </template>
 
@@ -480,7 +518,9 @@ async function toggleFavorite(game) {
   text-decoration: none;
   font: inherit;
   cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .quick:hover {
@@ -548,11 +588,24 @@ async function toggleFavorite(game) {
 }
 
 @keyframes wave {
-  0%, 60%, 100% { transform: rotate(0deg); }
-  10%, 30% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
 }
 
 .main {

@@ -10,7 +10,8 @@ const games = [
     favorite: true,
     rating: 5,
     hours_played: 142,
-    cover_url: 'https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg',
+    cover_url:
+      'https://upload.wikimedia.org/wikipedia/en/f/fb/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover.jpg',
     notes: 'Ultrahand builds are endless fun.',
   },
   {
@@ -105,14 +106,20 @@ const [user] = email
   ? await sql`SELECT id, email FROM users WHERE lower(email) = ${email}`
   : await sql`SELECT id, email FROM users ORDER BY id LIMIT 1`;
 if (!user) {
-  console.log(email ? `No account found for ${email}.` : 'No accounts yet. Create one in the app first, then run the seed.');
+  console.log(
+    email
+      ? `No account found for ${email}.`
+      : 'No accounts yet. Create one in the app first, then run the seed.',
+  );
   process.exit(1);
 }
 
 const [{ count }] = await sql`SELECT count(*)::int AS count FROM games WHERE user_id = ${user.id}`;
 
 if (count > 0 && !force) {
-  console.log(`${user.email} already has ${count} games, skipping seed. Add "-- --force" to wipe and reseed.`);
+  console.log(
+    `${user.email} already has ${count} games, skipping seed. Add "-- --force" to wipe and reseed.`,
+  );
   process.exit(0);
 }
 if (count > 0) await sql`DELETE FROM games WHERE user_id = ${user.id}`;
@@ -131,8 +138,16 @@ console.log(`Seeded ${games.length} games for ${user.email}.`);
 // heatmap and session history look like a real person played. Deterministic, so every
 // seed looks the same.
 let state = 42;
-const rand = () => ((state = (state * 1103515245 + 12345) % 2 ** 31) / 2 ** 31);
-const NOTES = ['Beat a tough boss!', 'Explored a new area', 'Grinding levels', 'Finished a side quest', null, null, null];
+const rand = () => (state = (state * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
+const NOTES = [
+  'Beat a tough boss!',
+  'Explored a new area',
+  'Grinding levels',
+  'Finished a side quest',
+  null,
+  null,
+  null,
+];
 
 const played = await sql`
   SELECT id, status FROM games
@@ -147,7 +162,13 @@ for (let daysAgo = 104; daysAgo >= 1; daysAgo--) {
   const game = played[Math.floor(rand() * played.length)];
   const minutes = Math.round((weekend ? 60 + rand() * 180 : 20 + rand() * 90) / 5) * 5;
   const startHour = lateNight ? 1 : weekend ? 13 + Math.floor(rand() * 6) : 19 + Math.floor(rand() * 3);
-  sessions.push({ game: game.id, daysAgo, startHour, minutes, note: NOTES[Math.floor(rand() * NOTES.length)] });
+  sessions.push({
+    game: game.id,
+    daysAgo,
+    startHour,
+    minutes,
+    note: NOTES[Math.floor(rand() * NOTES.length)],
+  });
 }
 for (const x of sessions) {
   await sql`
@@ -164,4 +185,6 @@ console.log(`Seeded ${sessions.length} play sessions.`);
 
 // Unlock whatever the sample data earns (e.g. First Steps, Night Owl, Marathon).
 const unlocked = await evaluateAchievements(user.id, tz);
-console.log(`Unlocked ${unlocked.length} achievements: ${unlocked.map((x) => x.title).join(', ') || 'none'}.`);
+console.log(
+  `Unlocked ${unlocked.length} achievements: ${unlocked.map((x) => x.title).join(', ') || 'none'}.`,
+);

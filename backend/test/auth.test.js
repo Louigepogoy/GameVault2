@@ -42,15 +42,21 @@ describe('register', () => {
 describe('login', () => {
   it('logs in with the right password (email is case-insensitive)', async () => {
     const u = await createUser({ email: 'login@example.com' });
-    const res = await api().post('/api/auth/login').send({ email: 'LOGIN@example.com', password: u.password });
+    const res = await api()
+      .post('/api/auth/login')
+      .send({ email: 'LOGIN@example.com', password: u.password });
     expect(res.status).toBe(200);
     expect(res.body.user.id).toBe(u.user.id);
   });
 
   it('gives the same error for a wrong password and an unknown email', async () => {
     await createUser({ email: 'known@example.com' });
-    const wrong = await api().post('/api/auth/login').send({ email: 'known@example.com', password: 'wrongpass1' });
-    const unknown = await api().post('/api/auth/login').send({ email: 'nobody@example.com', password: 'wrongpass1' });
+    const wrong = await api()
+      .post('/api/auth/login')
+      .send({ email: 'known@example.com', password: 'wrongpass1' });
+    const unknown = await api()
+      .post('/api/auth/login')
+      .send({ email: 'nobody@example.com', password: 'wrongpass1' });
     expect(wrong.status).toBe(401);
     expect(unknown.status).toBe(401);
     expect(wrong.body.error).toBe(unknown.body.error);
@@ -67,7 +73,10 @@ describe('requireAuth', () => {
     ['garbage', 'Bearer not-a-jwt'],
     ['wrong scheme', 'Basic abc'],
     ['wrong secret', `Bearer ${jwt.sign({ sub: '1' }, 'some-other-secret')}`],
-    ['expired', `Bearer ${jwt.sign({ sub: '1', exp: Math.floor(Date.now() / 1000) - 60 }, process.env.JWT_SECRET)}`],
+    [
+      'expired',
+      `Bearer ${jwt.sign({ sub: '1', exp: Math.floor(Date.now() / 1000) - 60 }, process.env.JWT_SECRET)}`,
+    ],
   ])('rejects an invalid token (%s)', async (_label, header) => {
     const res = await api().get('/api/games').set('Authorization', header);
     expect(res.status).toBe(401);
@@ -101,7 +110,9 @@ describe('forgot and reset password', () => {
     expect(reset.body.token).toEqual(expect.any(String));
 
     const oldLogin = await api().post('/api/auth/login').send({ email: u.user.email, password: u.password });
-    const newLogin = await api().post('/api/auth/login').send({ email: u.user.email, password: 'brandnew123' });
+    const newLogin = await api()
+      .post('/api/auth/login')
+      .send({ email: u.user.email, password: 'brandnew123' });
     expect(oldLogin.status).toBe(401);
     expect(newLogin.status).toBe(200);
 
@@ -116,7 +127,9 @@ describe('forgot and reset password', () => {
     await sql`UPDATE password_resets SET expires_at = now() - interval '1 minute'`;
 
     const expired = await api().post('/api/auth/reset-password').send({ token, password: 'brandnew123' });
-    const malformed = await api().post('/api/auth/reset-password').send({ token: 'abc', password: 'brandnew123' });
+    const malformed = await api()
+      .post('/api/auth/reset-password')
+      .send({ token: 'abc', password: 'brandnew123' });
     expect(expired.status).toBe(400);
     expect(malformed.status).toBe(400);
   });

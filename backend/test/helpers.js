@@ -28,7 +28,10 @@ export async function createUser({ name = 'Tester', password = 'secret123', emai
 }
 
 export async function createGame(auth, game = {}) {
-  const res = await api().post('/api/games').set(auth).send({ title: 'Test Game', ...game });
+  const res = await api()
+    .post('/api/games')
+    .set(auth)
+    .send({ title: 'Test Game', ...game });
   if (res.status !== 201) throw new Error(`create game failed: ${res.status} ${JSON.stringify(res.body)}`);
   return res.body;
 }

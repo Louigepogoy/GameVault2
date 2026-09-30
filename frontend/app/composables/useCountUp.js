@@ -29,7 +29,10 @@ export function useCountUp(source, { duration = 0.9, decimals = 0 } = {}) {
     // Count up from zero on first view.
     const to = toValue(source);
     if (to != null) run(to, 0);
-    watch(() => toValue(source), (to, from) => run(to, from ?? display.value));
+    watch(
+      () => toValue(source),
+      (to, from) => run(to, from ?? display.value),
+    );
   });
   onBeforeUnmount(() => controls?.stop());
 

@@ -24,13 +24,7 @@ const emit = defineEmits(['add']);
         autocomplete="off"
         enterkeyhint="search"
       />
-      <button
-        v-if="search"
-        type="button"
-        class="clear-btn"
-        aria-label="Clear search"
-        @click="search = ''"
-      >
+      <button v-if="search" type="button" class="clear-btn" aria-label="Clear search" @click="search = ''">
         <X :size="16" />
       </button>
     </div>
@@ -60,7 +54,13 @@ const emit = defineEmits(['add']);
       </button>
     </div>
 
-    <button type="button" class="btn btn-primary add-btn" title="Add game (N)" aria-keyshortcuts="N" @click="emit('add')">
+    <button
+      type="button"
+      class="btn btn-primary add-btn"
+      title="Add game (N)"
+      aria-keyshortcuts="N"
+      @click="emit('add')"
+    >
       <Plus :size="20" :stroke-width="2.5" />
       Add Game
     </button>
@@ -151,7 +151,9 @@ const emit = defineEmits(['add']);
   place-items: center;
   color: #fff;
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  box-shadow: 0 10px 28px rgba(139, 92, 246, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  box-shadow:
+    0 10px 28px rgba(139, 92, 246, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
   transition: transform 0.15s ease;
 }
 

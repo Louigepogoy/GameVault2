@@ -9,7 +9,10 @@ if (!process.env.DATABASE_URL) {
 // (values become bound parameters) and sql.query(text, params), both resolving to rows.
 function wrap(run) {
   const sql = (strings, ...values) =>
-    run(strings.slice(1).reduce((text, part, i) => `${text}$${i + 1}${part}`, strings[0]), values);
+    run(
+      strings.slice(1).reduce((text, part, i) => `${text}$${i + 1}${part}`, strings[0]),
+      values,
+    );
   sql.query = (text, params = []) => run(text, params);
   return sql;
 }

@@ -59,11 +59,15 @@ watch(
 watch(version, () => props.open && load());
 
 // "Tue, Sep 30" and "7:30 PM – 9:05 PM"
-const day = (iso) => new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const day = (iso) =>
+  new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 const time = (iso) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
 const coverFailed = ref(false);
-watch(() => props.game?.cover_url, () => (coverFailed.value = false));
+watch(
+  () => props.game?.cover_url,
+  () => (coverFailed.value = false),
+);
 </script>
 
 <template>
@@ -81,7 +85,9 @@ watch(() => props.game?.cover_url, () => (coverFailed.value = false));
           <div v-else class="cover-placeholder" aria-hidden="true"><Gamepad2 :size="34" /></div>
         </div>
         <div class="facts">
-          <p class="meta">{{ [game.platform, game.genre].filter(Boolean).join(' • ') || 'No platform or genre yet' }}</p>
+          <p class="meta">
+            {{ [game.platform, game.genre].filter(Boolean).join(' • ') || 'No platform or genre yet' }}
+          </p>
           <span class="badge" :class="`badge-${game.status}`">{{ STATUS_LABELS[game.status] }}</span>
           <p class="fact">
             <Clock :size="16" aria-hidden="true" />
@@ -115,7 +121,8 @@ watch(() => props.game?.cover_url, () => (coverFailed.value = false));
         <div class="history-head">
           <h3 id="history-title"><History :size="18" aria-hidden="true" /> Play sessions</h3>
           <span v-if="totals.total" class="history-total">
-            {{ totals.total }} session{{ totals.total === 1 ? '' : 's' }} · {{ formatDuration(totals.total_minutes) }}
+            {{ totals.total }} session{{ totals.total === 1 ? '' : 's' }} ·
+            {{ formatDuration(totals.total_minutes) }}
           </span>
         </div>
 
@@ -142,7 +149,13 @@ watch(() => props.game?.cover_url, () => (coverFailed.value = false));
               <span class="row-duration">{{ formatDuration(s.duration_minutes) }}</span>
             </li>
           </ul>
-          <button v-if="hasMore" type="button" class="btn btn-ghost more" :disabled="loadingMore" @click="load({ more: true })">
+          <button
+            v-if="hasMore"
+            type="button"
+            class="btn btn-ghost more"
+            :disabled="loadingMore"
+            @click="load({ more: true })"
+          >
             {{ loadingMore ? 'Loading...' : 'Show older sessions' }}
           </button>
         </template>

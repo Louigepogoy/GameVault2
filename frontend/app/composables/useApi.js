@@ -61,12 +61,14 @@ export function useApi() {
     // Play sessions
     getActiveSession: () => request('/sessions/active'),
     startSession: (gameId) => request('/sessions/start', { method: 'POST', body: { game_id: gameId } }),
-    stopSession: (id, note) => request(`/sessions/${id}/stop`, { method: 'POST', body: note ? { note } : {} }),
+    stopSession: (id, note) =>
+      request(`/sessions/${id}/stop`, { method: 'POST', body: note ? { note } : {} }),
     updateSessionNote: (id, note) => request(`/sessions/${id}`, { method: 'PATCH', body: { note } }),
     discardSession: (id) => request(`/sessions/${id}`, { method: 'DELETE' }),
     listSessions: ({ gameId, page = 1, limit = 10 } = {}) =>
       request('/sessions', { query: { ...(gameId && { game_id: gameId }), page, limit } }),
-    getHeatmap: ({ weeks = 15, tz } = {}) => request('/stats/heatmap', { query: { weeks, ...(tz && { tz }) } }),
+    getHeatmap: ({ weeks = 15, tz } = {}) =>
+      request('/stats/heatmap', { query: { weeks, ...(tz && { tz }) } }),
     getAchievements: () => request('/achievements'),
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),

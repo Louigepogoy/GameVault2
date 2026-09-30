@@ -17,7 +17,10 @@ watch(
 );
 
 const imageFailed = ref(false);
-watch(() => props.game?.slug, () => (imageFailed.value = false));
+watch(
+  () => props.game?.slug,
+  () => (imageFailed.value = false),
+);
 
 const linkHint = (link) => {
   if (link.label === 'Official site') return 'Info & download';
@@ -198,7 +201,9 @@ h3 {
   background: var(--surface-2);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.2s ease, transform 0.15s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.15s ease;
 }
 
 .store-link:hover {

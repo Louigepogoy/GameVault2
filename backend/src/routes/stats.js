@@ -46,7 +46,13 @@ router.get('/', async (req, res, next) => {
       `,
     ]);
 
-    res.json({ ...totals, by_status: byStatus, by_platform: byPlatform, by_genre: byGenre, most_played: mostPlayed });
+    res.json({
+      ...totals,
+      by_status: byStatus,
+      by_platform: byPlatform,
+      by_genre: byGenre,
+      most_played: mostPlayed,
+    });
   } catch (err) {
     next(err);
   }

@@ -26,7 +26,11 @@ const GENRE_MAP = {
   puzzle: 'Puzzle',
 };
 
-const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const norm = (s) =>
+  (s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 const mapGenre = (names) => names.map((n) => GENRE_MAP[norm(n)]).find(Boolean) ?? null;
 
 async function getJson(url) {

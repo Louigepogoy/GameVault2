@@ -43,7 +43,8 @@ const parse = (iso) => {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d);
 };
-const dayLabel = (iso) => parse(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const dayLabel = (iso) =>
+  parse(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
 // Columns of 7 (Sunday first), padded at the start so rows line up with weekdays.
 const columns = computed(() => {
@@ -64,7 +65,8 @@ const monthLabels = computed(() => {
     const month = parse(first.date).getMonth();
     if (month !== prev) {
       const last = labels[labels.length - 1];
-      if (!last || i - last.col >= 3) labels.push({ col: i, text: parse(first.date).toLocaleDateString('en-US', { month: 'short' }) });
+      if (!last || i - last.col >= 3)
+        labels.push({ col: i, text: parse(first.date).toLocaleDateString('en-US', { month: 'short' }) });
       prev = month;
     }
   });
@@ -150,7 +152,8 @@ watch(columns, async () => {
               :key="m.col"
               class="hm-month"
               :style="{ left: `${m.col * (CELL + GAP)}px` }"
-            >{{ m.text }}</span>
+              >{{ m.text }}</span
+            >
           </div>
           <div class="hm-body">
             <div class="hm-weekdays" aria-hidden="true">
@@ -325,11 +328,22 @@ h2 {
 }
 
 /* One hue, lighter -> stronger. */
-.lvl-0 { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--border); }
-.lvl-1 { background: color-mix(in srgb, var(--accent) 30%, var(--surface-solid)); }
-.lvl-2 { background: color-mix(in srgb, var(--accent) 52%, var(--surface-solid)); }
-.lvl-3 { background: color-mix(in srgb, var(--accent) 76%, var(--surface-solid)); }
-.lvl-4 { background: var(--accent); }
+.lvl-0 {
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.lvl-1 {
+  background: color-mix(in srgb, var(--accent) 30%, var(--surface-solid));
+}
+.lvl-2 {
+  background: color-mix(in srgb, var(--accent) 52%, var(--surface-solid));
+}
+.lvl-3 {
+  background: color-mix(in srgb, var(--accent) 76%, var(--surface-solid));
+}
+.lvl-4 {
+  background: var(--accent);
+}
 
 .hm-grid .hm-cell:not(.pad) {
   cursor: pointer;

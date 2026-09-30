@@ -13,12 +13,14 @@ const counts = {
   playing: useCountUp(() => props.stats?.playing),
 };
 
-const cards = computed(() => [
-  { key: 'total', label: 'Total Games', icon: Library, color: 'var(--accent-soft)' },
-  { key: 'favorites', label: 'Favorites', icon: Heart, color: 'var(--red)' },
-  { key: 'completed', label: 'Completed', icon: Trophy, color: 'var(--green)' },
-  { key: 'playing', label: 'Currently Playing', icon: Play, color: 'var(--blue)' },
-].map((c) => ({ ...c, value: props.stats?.[c.key] })));
+const cards = computed(() =>
+  [
+    { key: 'total', label: 'Total Games', icon: Library, color: 'var(--accent-soft)' },
+    { key: 'favorites', label: 'Favorites', icon: Heart, color: 'var(--red)' },
+    { key: 'completed', label: 'Completed', icon: Trophy, color: 'var(--green)' },
+    { key: 'playing', label: 'Currently Playing', icon: Play, color: 'var(--blue)' },
+  ].map((c) => ({ ...c, value: props.stats?.[c.key] })),
+);
 </script>
 
 <template>

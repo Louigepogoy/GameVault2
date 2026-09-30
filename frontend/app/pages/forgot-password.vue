@@ -33,8 +33,8 @@ async function submit() {
   >
     <template v-if="sent">
       <p class="form-alert form-alert-success" role="status">
-        If an account exists for <strong>{{ email.trim() }}</strong>, a reset link is on its way.
-        The link works for 1 hour.
+        If an account exists for <strong>{{ email.trim() }}</strong
+        >, a reset link is on its way. The link works for 1 hour.
       </p>
       <p class="hint-text">Didn't get it? Check your spam folder, or try again.</p>
       <div class="auth-form">

@@ -86,7 +86,9 @@ body {
   font-size: 17px;
   line-height: 1.45;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 button,
@@ -147,7 +149,11 @@ img {
   letter-spacing: 0.03em;
   white-space: nowrap;
   text-decoration: none; /* also used on links */
-  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .btn:active {
@@ -195,7 +201,11 @@ img {
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text-muted);
-  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.15s ease;
 }
 
 .icon-btn:hover {
@@ -216,7 +226,9 @@ img {
   background: var(--input-bg);
   font-size: 16px; /* 16px stops iOS from zooming on focus */
   font-weight: 500;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .field::placeholder {
@@ -266,10 +278,18 @@ select.field option {
   background: currentColor;
 }
 
-.badge-backlog { color: var(--amber); }
-.badge-playing { color: var(--blue); }
-.badge-completed { color: var(--green); }
-.badge-dropped { color: var(--red); }
+.badge-backlog {
+  color: var(--amber);
+}
+.badge-playing {
+  color: var(--blue);
+}
+.badge-completed {
+  color: var(--green);
+}
+.badge-dropped {
+  color: var(--red);
+}
 
 /* Skeleton shimmer */
 .skeleton {
@@ -280,8 +300,12 @@ select.field option {
 }
 
 @keyframes shimmer {
-  from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -306,7 +330,9 @@ body.has-now-playing .fab.fab {
 /* ---------- Page transitions ---------- */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
 }
 
 .page-enter-from {
@@ -378,8 +404,12 @@ body.has-now-playing .fab.fab {
   font-weight: 600;
 }
 
-.form-alert-error { color: var(--red); }
-.form-alert-success { color: var(--green); }
+.form-alert-error {
+  color: var(--red);
+}
+.form-alert-success {
+  color: var(--green);
+}
 
 .link {
   color: var(--accent-soft);

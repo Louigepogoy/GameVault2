@@ -17,7 +17,13 @@ describe('games CRUD', () => {
   it('creates a game with sensible defaults', async () => {
     const res = await api().post('/api/games').set(u.auth).send({ title: '  Hades  ', genre: 'Roguelike' });
     expect(res.status).toBe(201);
-    expect(res.body).toMatchObject({ title: 'Hades', status: 'backlog', favorite: false, rating: null, user_id: u.user.id });
+    expect(res.body).toMatchObject({
+      title: 'Hades',
+      status: 'backlog',
+      favorite: false,
+      rating: null,
+      user_id: u.user.id,
+    });
   });
 
   it('reads one game, and 404s or 400s for bad ids', async () => {
@@ -38,7 +44,9 @@ describe('games CRUD', () => {
 
     expect((await api().patch(`/api/games/${g.id}`).set(u.auth).send({})).status).toBe(400);
     expect((await api().patch(`/api/games/${g.id}`).set(u.auth).send({ rating: 9 })).status).toBe(400);
-    expect((await api().patch(`/api/games/${g.id}`).set(u.auth).send({ status: 'wishful' })).status).toBe(400);
+    expect((await api().patch(`/api/games/${g.id}`).set(u.auth).send({ status: 'wishful' })).status).toBe(
+      400,
+    );
   });
 
   it('deletes a game', async () => {
@@ -53,7 +61,13 @@ describe('listing', () => {
   let owner;
   beforeAll(async () => {
     owner = await createUser();
-    await createGame(owner.auth, { title: 'Zelda', status: 'completed', rating: 5, hours_played: 100, favorite: true });
+    await createGame(owner.auth, {
+      title: 'Zelda',
+      status: 'completed',
+      rating: 5,
+      hours_played: 100,
+      favorite: true,
+    });
     await createGame(owner.auth, { title: 'apex', status: 'playing', rating: 3, hours_played: 40 });
     await createGame(owner.auth, { title: '100% Orange Juice', status: 'backlog' });
   });
@@ -80,6 +94,13 @@ describe('listing', () => {
 
   it('counts stats for this user', async () => {
     const res = await api().get('/api/stats').set(owner.auth);
-    expect(res.body).toMatchObject({ total: 3, favorites: 1, completed: 1, playing: 1, backlog: 1, hours: 140 });
+    expect(res.body).toMatchObject({
+      total: 3,
+      favorites: 1,
+      completed: 1,
+      playing: 1,
+      backlog: 1,
+      hours: 140,
+    });
   });
 });

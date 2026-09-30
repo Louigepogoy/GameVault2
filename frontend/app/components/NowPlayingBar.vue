@@ -65,7 +65,10 @@ async function saveNote() {
 }
 
 const coverFailed = ref(false);
-watch(() => active.value?.game_cover_url, () => (coverFailed.value = false));
+watch(
+  () => active.value?.game_cover_url,
+  () => (coverFailed.value = false),
+);
 </script>
 
 <template>
@@ -119,7 +122,8 @@ watch(() => active.value?.game_cover_url, () => (coverFailed.value = false));
     <template v-if="justStopped">
       <p class="summary">
         You played <strong>{{ justStopped.game_title }}</strong> for
-        <strong>{{ formatDuration(justStopped.duration_minutes) }}</strong>.
+        <strong>{{ formatDuration(justStopped.duration_minutes) }}</strong
+        >.
         <template v-if="justStopped.game_hours_played">
           That's {{ justStopped.game_hours_played }}h in total.
         </template>
@@ -153,7 +157,8 @@ watch(() => active.value?.game_cover_url, () => (coverFailed.value = false));
   right: 0;
   bottom: 0;
   z-index: 60;
-  padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
   pointer-events: none;
 }
 
@@ -167,7 +172,9 @@ watch(() => active.value?.game_cover_url, () => (coverFailed.value = false));
   border-radius: 18px;
   border: 1px solid var(--border-strong);
   background: var(--surface-solid);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 24px rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(139, 92, 246, 0.2);
   pointer-events: auto;
 }
 
@@ -217,7 +224,9 @@ watch(() => active.value?.game_cover_url, () => (coverFailed.value = false));
 }
 
 @keyframes pulse {
-  50% { opacity: 0.3; }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .np-title {

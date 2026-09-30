@@ -10,7 +10,8 @@ const stubs = {
   TitleLookup: {
     props: ['modelValue', 'id'],
     emits: ['update:modelValue'],
-    template: '<input :id="id" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+    template:
+      '<input :id="id" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
   },
 };
 

@@ -30,9 +30,16 @@ describe('play sessions', () => {
     const g = await createGame(u.auth, { title: 'Timed', hours_played: 10 });
     const { session } = (await api().post('/api/sessions/start').set(u.auth).send({ game_id: g.id })).body;
     await backdate(session.id, 90);
-    const stop = await api().post(`/api/sessions/${session.id}/stop`).set(u.auth).send({ note: ' good run ' });
+    const stop = await api()
+      .post(`/api/sessions/${session.id}/stop`)
+      .set(u.auth)
+      .send({ note: ' good run ' });
     expect(stop.status).toBe(200);
-    expect(stop.body.session).toMatchObject({ duration_minutes: 90, note: 'good run', game_hours_played: 11.5 });
+    expect(stop.body.session).toMatchObject({
+      duration_minutes: 90,
+      note: 'good run',
+      game_hours_played: 11.5,
+    });
     expect((await api().post(`/api/sessions/${session.id}/stop`).set(u.auth).send({})).status).toBe(404);
   });
 
@@ -58,7 +65,14 @@ describe('play sessions', () => {
     expect(list.body.sessions).toHaveLength(1);
     expect((await api().get('/api/sessions?limit=500').set(u.auth)).status).toBe(400);
     expect((await api().post('/api/sessions/start').set(u.auth).send({ game_id: 'x' })).status).toBe(400);
-    expect((await api().patch('/api/sessions/1').set(u.auth).send({ note: 'x'.repeat(501) })).status).toBe(400);
+    expect(
+      (
+        await api()
+          .patch('/api/sessions/1')
+          .set(u.auth)
+          .send({ note: 'x'.repeat(501) })
+      ).status,
+    ).toBe(400);
   });
 });
 
@@ -92,7 +106,9 @@ describe('achievements', () => {
     const second = await api().post('/api/games').set(fresh.auth).send({ title: 'Second' });
     expect(second.body.achievements_unlocked).toEqual([]);
 
-    const { session } = (await api().post('/api/sessions/start').set(fresh.auth).send({ game_id: first.body.id })).body;
+    const { session } = (
+      await api().post('/api/sessions/start').set(fresh.auth).send({ game_id: first.body.id })
+    ).body;
     await backdate(session.id, 185);
     const stop = await api().post(`/api/sessions/${session.id}/stop`).set(fresh.auth).send({});
     expect(stop.body.achievements_unlocked.map((a) => a.code)).toContain('marathon');

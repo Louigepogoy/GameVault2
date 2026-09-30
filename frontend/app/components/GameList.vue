@@ -54,7 +54,12 @@ onMounted(() => setTimeout(() => (firstLoad.value = false), 800));
           :initial="{ opacity: 0, y: 18, scale: 0.98 }"
           :animate="{ opacity: 1, y: 0, scale: 1 }"
           :exit="{ opacity: 0, scale: 0.92, transition: { duration: 0.2 } }"
-          :transition="{ type: 'spring', stiffness: 320, damping: 30, delay: firstLoad ? Math.min(i, 8) * 0.05 : 0 }"
+          :transition="{
+            type: 'spring',
+            stiffness: 320,
+            damping: 30,
+            delay: firstLoad ? Math.min(i, 8) * 0.05 : 0,
+          }"
         >
           <GameCard
             :game="game"

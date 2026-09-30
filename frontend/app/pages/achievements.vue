@@ -43,7 +43,8 @@ function progressText({ current, target, unit }) {
   if (unit === 'minutes') return `${formatDuration(current)} / ${formatDuration(target)}`;
   return `${current}/${target}${unit ? ` ${unit}` : ''}`;
 }
-const unlockedDate = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const unlockedDate = (iso) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 </script>
 
 <template>
@@ -80,7 +81,14 @@ const unlockedDate = (iso) => new Date(iso).toLocaleDateString('en-US', { month:
             <span>Collection</span>
             <strong>{{ percent }}%</strong>
           </div>
-          <div class="track" role="progressbar" :aria-valuenow="percent" aria-valuemin="0" aria-valuemax="100" aria-label="Achievements unlocked">
+          <div
+            class="track"
+            role="progressbar"
+            :aria-valuenow="percent"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Achievements unlocked"
+          >
             <Motion
               class="fill"
               :initial="{ width: '0%' }"
@@ -122,7 +130,10 @@ const unlockedDate = (iso) => new Date(iso).toLocaleDateString('en-US', { month:
                   :aria-valuemax="a.progress.target"
                   :aria-label="`${a.title} progress`"
                 >
-                  <div class="mini-fill" :style="{ width: `${(a.progress.current / a.progress.target) * 100}%` }" />
+                  <div
+                    class="mini-fill"
+                    :style="{ width: `${(a.progress.current / a.progress.target) * 100}%` }"
+                  />
                 </div>
                 <span class="ach-count">{{ progressText(a.progress) }}</span>
               </div>
@@ -247,7 +258,9 @@ const unlockedDate = (iso) => new Date(iso).toLocaleDateString('en-US', { month:
 
 .ach:not(.locked) {
   border-color: color-mix(in srgb, var(--amber) 45%, transparent);
-  box-shadow: var(--shadow), 0 0 22px color-mix(in srgb, var(--amber) 14%, transparent);
+  box-shadow:
+    var(--shadow),
+    0 0 22px color-mix(in srgb, var(--amber) 14%, transparent);
 }
 
 .ach-icon {

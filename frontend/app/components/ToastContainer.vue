@@ -69,14 +69,22 @@ const icons = { success: CircleCheck, error: CircleAlert, info: Info, achievemen
   border-radius: 14px;
   background: var(--surface-solid);
   border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 18px color-mix(in srgb, var(--c) 20%, transparent);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 18px color-mix(in srgb, var(--c) 20%, transparent);
   font-weight: 600;
   pointer-events: auto;
 }
 
-.toast-error { --c: var(--red); }
-.toast-info { --c: var(--accent-soft); }
-.toast-achievement { --c: var(--amber); }
+.toast-error {
+  --c: var(--red);
+}
+.toast-info {
+  --c: var(--accent-soft);
+}
+.toast-achievement {
+  --c: var(--amber);
+}
 
 .toast-achievement .toast-msg {
   font-weight: 700;
@@ -136,7 +144,11 @@ const icons = { success: CircleCheck, error: CircleAlert, info: Info, achievemen
 }
 
 @keyframes toast-timer {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 </style>

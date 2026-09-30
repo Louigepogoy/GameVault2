@@ -17,7 +17,9 @@ try {
   // no .env (e.g. in CI)
 }
 if (realUrl && testUrl === realUrl) {
-  throw new Error('TEST_DATABASE_URL is the same as DATABASE_URL. Tests delete data; use a separate database.');
+  throw new Error(
+    'TEST_DATABASE_URL is the same as DATABASE_URL. Tests delete data; use a separate database.',
+  );
 }
 
 process.env.DATABASE_URL = testUrl;

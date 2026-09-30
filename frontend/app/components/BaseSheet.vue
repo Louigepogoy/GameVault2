@@ -26,7 +26,11 @@ onMounted(() => {
 const sheetMotion = computed(() =>
   isPhone.value
     ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
-    : { initial: { opacity: 0, y: 24, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 16, scale: 0.97 } },
+    : {
+        initial: { opacity: 0, y: 24, scale: 0.96 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        exit: { opacity: 0, y: 16, scale: 0.97 },
+      },
 );
 const spring = { type: 'spring', stiffness: 380, damping: 34 };
 

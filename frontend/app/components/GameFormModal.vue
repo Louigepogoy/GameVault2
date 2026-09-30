@@ -32,9 +32,11 @@ watch(
   (open) => {
     if (!open) return;
     const source = props.game ?? {};
-    Object.assign(form, empty(), Object.fromEntries(
-      Object.keys(empty()).map((k) => [k, source[k] ?? empty()[k]]),
-    ));
+    Object.assign(
+      form,
+      empty(),
+      Object.fromEntries(Object.keys(empty()).map((k) => [k, source[k] ?? empty()[k]])),
+    );
     errors.title = '';
     errors.cover_url = '';
     errors.hours_played = '';
@@ -43,7 +45,10 @@ watch(
   { immediate: true },
 );
 
-watch(() => form.cover_url, () => (previewFailed.value = false));
+watch(
+  () => form.cover_url,
+  () => (previewFailed.value = false),
+);
 
 const validCoverUrl = computed(() => /^https?:\/\/\S+$/i.test(form.cover_url.trim()));
 
@@ -74,7 +79,8 @@ function submit() {
   errors.title = form.title.trim() ? '' : 'Title is required.';
   errors.cover_url = form.cover_url.trim() && !validCoverUrl.value ? 'Enter a valid http(s) URL.' : '';
   const hours = form.hours_played === '' || form.hours_played === null ? null : Number(form.hours_played);
-  errors.hours_played = hours !== null && !(hours >= 0 && hours <= 100000) ? 'Enter hours from 0 to 100,000.' : '';
+  errors.hours_played =
+    hours !== null && !(hours >= 0 && hours <= 100000) ? 'Enter hours from 0 to 100,000.' : '';
   if (errors.title || errors.cover_url || errors.hours_played) return;
 
   emit('submit', {

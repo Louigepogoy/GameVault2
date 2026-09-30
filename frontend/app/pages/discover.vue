@@ -38,20 +38,29 @@ const recommended = computed(() =>
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase();
   return data.value.games.filter((g) => {
-    if (q && !`${g.title} ${g.genre} ${g.developer} ${g.tags.join(' ')}`.toLowerCase().includes(q)) return false;
+    if (q && !`${g.title} ${g.genre} ${g.developer} ${g.tags.join(' ')}`.toLowerCase().includes(q))
+      return false;
     if (genre.value && g.genre !== genre.value && !g.tags.includes(genre.value)) return false;
     switch (filter.value) {
-      case 'free': return g.price === 'free';
-      case 'paid': return g.price === 'paid';
-      case 'pc': return g.platforms.includes('PC');
-      case 'mobile': return g.platforms.some((p) => MOBILE.includes(p));
-      case 'console': return g.platforms.some(isConsole);
-      default: return true;
+      case 'free':
+        return g.price === 'free';
+      case 'paid':
+        return g.price === 'paid';
+      case 'pc':
+        return g.platforms.includes('PC');
+      case 'mobile':
+        return g.platforms.some((p) => MOBILE.includes(p));
+      case 'console':
+        return g.platforms.some(isConsole);
+      default:
+        return true;
     }
   });
 });
 
-const showRecommended = computed(() => recommended.value.length && !search.value && !filter.value && !genre.value);
+const showRecommended = computed(
+  () => recommended.value.length && !search.value && !filter.value && !genre.value,
+);
 
 function clearFilters() {
   search.value = '';
@@ -139,7 +148,9 @@ async function addToVault(game, platform = game.platforms[0]) {
 
           <!-- All games + filters -->
           <section aria-labelledby="all-title">
-            <h2 id="all-title" class="section-title">{{ showRecommended ? 'More games to try' : 'Game suggestions' }}</h2>
+            <h2 id="all-title" class="section-title">
+              {{ showRecommended ? 'More games to try' : 'Game suggestions' }}
+            </h2>
 
             <div class="filters">
               <div class="search">
@@ -153,7 +164,13 @@ async function addToVault(game, platform = game.platforms[0]) {
                   placeholder="Search games, genres, developers..."
                   autocomplete="off"
                 />
-                <button v-if="search" type="button" class="clear-btn" aria-label="Clear search" @click="search = ''">
+                <button
+                  v-if="search"
+                  type="button"
+                  class="clear-btn"
+                  aria-label="Clear search"
+                  @click="search = ''"
+                >
                   <X :size="16" />
                 </button>
               </div>
@@ -376,7 +393,9 @@ async function addToVault(game, platform = game.platforms[0]) {
   background: var(--surface-2);
   color: var(--text);
   font-weight: 700;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .chip:hover {

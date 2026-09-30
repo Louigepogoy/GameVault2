@@ -34,7 +34,8 @@ const validators = {
   rating(value) {
     if (value === null || value === undefined || value === '') return null;
     const n = Number(value);
-    if (!Number.isInteger(n) || n < 1 || n > 5) throw new HttpError(400, 'rating must be an integer from 1 to 5');
+    if (!Number.isInteger(n) || n < 1 || n > 5)
+      throw new HttpError(400, 'rating must be an integer from 1 to 5');
     return n;
   },
   hours_played(value) {
@@ -103,7 +104,8 @@ export function parseId(raw, what = 'game') {
 export function parseIntParam(raw, { min, max, fallback, name }) {
   if (raw === undefined || raw === '') return fallback;
   const n = Number(raw);
-  if (!Number.isInteger(n) || n < min || n > max) throw new HttpError(400, `${name} must be a whole number from ${min} to ${max}`);
+  if (!Number.isInteger(n) || n < min || n > max)
+    throw new HttpError(400, `${name} must be a whole number from ${min} to ${max}`);
   return n;
 }
 

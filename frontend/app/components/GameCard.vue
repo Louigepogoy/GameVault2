@@ -24,7 +24,10 @@ function toggleFavorite() {
 // Fall back to the placeholder if the cover URL fails to load.
 const coverFailed = ref(false);
 const coverImg = ref(null);
-watch(() => props.game.cover_url, () => (coverFailed.value = false));
+watch(
+  () => props.game.cover_url,
+  () => (coverFailed.value = false),
+);
 
 // A server-rendered image can fail before hydration attaches @error, so check once mounted.
 onMounted(() => {
@@ -35,7 +38,12 @@ onMounted(() => {
 
 <template>
   <article class="card game-card" :class="{ playing: isPlaying }">
-    <button type="button" class="cover" :aria-label="`Details and play sessions for ${game.title}`" @click="emit('open', game)">
+    <button
+      type="button"
+      class="cover"
+      :aria-label="`Details and play sessions for ${game.title}`"
+      @click="emit('open', game)"
+    >
       <img
         v-if="game.cover_url && !coverFailed"
         ref="coverImg"
@@ -113,7 +121,9 @@ onMounted(() => {
           class="icon-btn fav-btn"
           :class="{ active: game.favorite }"
           :aria-pressed="game.favorite"
-          :aria-label="game.favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`"
+          :aria-label="
+            game.favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`
+          "
           @click="toggleFavorite"
         >
           <Motion
@@ -150,7 +160,9 @@ onMounted(() => {
   gap: 14px;
   padding: 12px;
   min-width: 0;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 @media (hover: hover) {
@@ -162,7 +174,9 @@ onMounted(() => {
 
 .game-card.playing {
   border-color: color-mix(in srgb, var(--green) 55%, transparent);
-  box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--green) 30%, transparent);
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px color-mix(in srgb, var(--green) 30%, transparent);
 }
 
 .title-btn {

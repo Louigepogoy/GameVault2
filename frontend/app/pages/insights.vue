@@ -8,7 +8,11 @@ const api = useApi();
 const toast = useToast();
 
 // Same key as the home page, so both share one cached copy of the stats.
-const { data: stats, error, status } = await useAsyncData('stats', () => api.getStats(), { default: () => null });
+const {
+  data: stats,
+  error,
+  status,
+} = await useAsyncData('stats', () => api.getStats(), { default: () => null });
 watch(error, (err) => err && toast.error(err.message));
 onMounted(() => error.value && toast.error(error.value.message));
 
@@ -116,7 +120,11 @@ const tooltipLeft = computed(() => {
       </template>
 
       <!-- No games yet -->
-      <EmptyState v-else-if="!stats?.total" title="No insights yet." message="Add a few games to see your stats here.">
+      <EmptyState
+        v-else-if="!stats?.total"
+        title="No insights yet."
+        message="Add a few games to see your stats here."
+      >
         <NuxtLink to="/" class="btn btn-primary">Go to My Games</NuxtLink>
       </EmptyState>
 

@@ -49,9 +49,12 @@ function resetFilters() {
 }
 
 // New filters -> new pick.
-watch(() => [filters.status, filters.platform], () => {
-  if (!loading.value) roll();
-});
+watch(
+  () => [filters.status, filters.platform],
+  () => {
+    if (!loading.value) roll();
+  },
+);
 
 const randomFrom = (list) => list[Math.floor(Math.random() * list.length)] ?? null;
 
@@ -113,7 +116,10 @@ async function start() {
   }
 }
 
-watch(() => current.value?.cover_url, () => (coverFailed.value = false));
+watch(
+  () => current.value?.cover_url,
+  () => (coverFailed.value = false),
+);
 
 watch(
   () => props.open,
@@ -161,7 +167,9 @@ onBeforeUnmount(() => clearInterval(timer));
       <div v-else-if="!current && filtersAreDefault" class="empty">
         <div class="emoji" aria-hidden="true">🎉</div>
         <p class="empty-title">Your backlog is empty!</p>
-        <p class="muted">Nothing waiting. Try <strong>Any status</strong> above, or add games to your Backlog.</p>
+        <p class="muted">
+          Nothing waiting. Try <strong>Any status</strong> above, or add games to your Backlog.
+        </p>
       </div>
 
       <div v-else-if="!current" class="empty">
@@ -172,49 +180,49 @@ onBeforeUnmount(() => clearInterval(timer));
       </div>
 
       <template v-else>
-      <div class="pick" :class="{ rolling }" :aria-live="rolling ? 'off' : 'polite'">
-        <!-- Re-keyed when the shuffle lands, so the final pick pops in. -->
-        <Motion
-          :key="rolling ? 'rolling' : current.id"
-          class="pick-cover"
-          :initial="rolling ? false : { scale: 0.85, rotate: -4 }"
-          :animate="{ scale: 1, rotate: 0 }"
-          :transition="{ type: 'spring', stiffness: 420, damping: 14 }"
-        >
-          <img
-            v-if="current.cover_url && !coverFailed"
-            :src="current.cover_url"
-            :alt="`${current.title} cover`"
-            referrerpolicy="no-referrer"
-            @error="coverFailed = true"
-          />
-          <div v-else class="cover-placeholder" aria-hidden="true">
-            <Gamepad2 :size="40" />
-          </div>
-        </Motion>
-        <p class="pick-title">{{ current.title }}</p>
-        <p class="muted">
-          {{ [current.platform, current.genre].filter(Boolean).join(' • ') || 'From your backlog' }}
-        </p>
-      </div>
+        <div class="pick" :class="{ rolling }" :aria-live="rolling ? 'off' : 'polite'">
+          <!-- Re-keyed when the shuffle lands, so the final pick pops in. -->
+          <Motion
+            :key="rolling ? 'rolling' : current.id"
+            class="pick-cover"
+            :initial="rolling ? false : { scale: 0.85, rotate: -4 }"
+            :animate="{ scale: 1, rotate: 0 }"
+            :transition="{ type: 'spring', stiffness: 420, damping: 14 }"
+          >
+            <img
+              v-if="current.cover_url && !coverFailed"
+              :src="current.cover_url"
+              :alt="`${current.title} cover`"
+              referrerpolicy="no-referrer"
+              @error="coverFailed = true"
+            />
+            <div v-else class="cover-placeholder" aria-hidden="true">
+              <Gamepad2 :size="40" />
+            </div>
+          </Motion>
+          <p class="pick-title">{{ current.title }}</p>
+          <p class="muted">
+            {{ [current.platform, current.genre].filter(Boolean).join(' • ') || 'From your backlog' }}
+          </p>
+        </div>
 
-      <p class="pool muted">{{ poolLabel }}</p>
+        <p class="pool muted">{{ poolLabel }}</p>
 
-      <div class="actions">
-        <button
-          type="button"
-          class="btn btn-ghost"
-          :disabled="rolling || starting || pool.length < 2"
-          @click="roll"
-        >
-          <Dices :size="18" />
-          Spin Again
-        </button>
-        <button type="button" class="btn btn-primary" :disabled="rolling || starting" @click="start">
-          <Play :size="18" />
-          {{ starting ? 'Starting...' : 'Start Playing' }}
-        </button>
-      </div>
+        <div class="actions">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            :disabled="rolling || starting || pool.length < 2"
+            @click="roll"
+          >
+            <Dices :size="18" />
+            Spin Again
+          </button>
+          <button type="button" class="btn btn-primary" :disabled="rolling || starting" @click="start">
+            <Play :size="18" />
+            {{ starting ? 'Starting...' : 'Start Playing' }}
+          </button>
+        </div>
       </template>
     </template>
   </BaseSheet>
@@ -250,7 +258,9 @@ onBeforeUnmount(() => clearInterval(timer));
   border: 1px solid var(--border-strong);
   background: var(--surface-2);
   box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .pick-cover img {

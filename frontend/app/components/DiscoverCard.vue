@@ -70,7 +70,13 @@ const initials = computed(() =>
         >
           <Plus :size="20" />
         </button>
-        <span v-else class="icon-btn owned" role="img" :aria-label="`${game.title} is in your vault`" title="In your vault">
+        <span
+          v-else
+          class="icon-btn owned"
+          role="img"
+          :aria-label="`${game.title} is in your vault`"
+          title="In your vault"
+        >
           <Check :size="20" />
         </span>
       </div>

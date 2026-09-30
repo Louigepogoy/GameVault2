@@ -14,10 +14,12 @@ beforeAll(async () => {
   bob = await createUser({ name: 'Bob' });
   aliceGame = await createGame(alice.auth, { title: 'Alice Secret Game', status: 'playing', genre: 'RPG' });
 
-  aliceDone = (await api().post('/api/sessions/start').set(alice.auth).send({ game_id: aliceGame.id })).body.session;
+  aliceDone = (await api().post('/api/sessions/start').set(alice.auth).send({ game_id: aliceGame.id })).body
+    .session;
   await sql`UPDATE play_sessions SET started_at = now() - interval '2 hours' WHERE id = ${aliceDone.id}`;
   await api().post(`/api/sessions/${aliceDone.id}/stop`).set(alice.auth).send({ note: 'private note' });
-  aliceRunning = (await api().post('/api/sessions/start').set(alice.auth).send({ game_id: aliceGame.id })).body.session;
+  aliceRunning = (await api().post('/api/sessions/start').set(alice.auth).send({ game_id: aliceGame.id }))
+    .body.session;
 });
 
 describe("another user's games", () => {
@@ -68,8 +70,12 @@ describe("another user's sessions", () => {
   });
 
   it('cannot be stopped, edited or discarded', async () => {
-    expect((await api().post(`/api/sessions/${aliceRunning.id}/stop`).set(bob.auth).send({})).status).toBe(404);
-    expect((await api().patch(`/api/sessions/${aliceDone.id}`).set(bob.auth).send({ note: 'x' })).status).toBe(404);
+    expect((await api().post(`/api/sessions/${aliceRunning.id}/stop`).set(bob.auth).send({})).status).toBe(
+      404,
+    );
+    expect(
+      (await api().patch(`/api/sessions/${aliceDone.id}`).set(bob.auth).send({ note: 'x' })).status,
+    ).toBe(404);
     expect((await api().delete(`/api/sessions/${aliceRunning.id}`).set(bob.auth)).status).toBe(404);
 
     const [running] = await sql`SELECT ended_at FROM play_sessions WHERE id = ${aliceRunning.id}`;
