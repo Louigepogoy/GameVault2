@@ -14,6 +14,8 @@ export const CATALOG = [
   // ---------- Free to play ----------
   {
     slug: 'genshin-impact',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/2d/09/2f/2d092f1a-f550-9e4e-51f3-483a973ffc53/EN-1.jpg/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/5c/e2/13/5ce21317-a08a-24ac-cc5f-2b25a4d71fa6/AppIcon-0-0-1x_U007epad-0-1-85-220.png/600x600bb.jpg',
     title: 'Genshin Impact',
     developer: 'HoYoverse',
     year: 2020,
@@ -31,6 +33,8 @@ export const CATALOG = [
   },
   {
     slug: 'honkai-star-rail',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/61/61/96/616196cd-2cf5-19bd-120b-2bbeec236934/EN-2688_U00d71242-0-4.6KV.jpg/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/65/dc/fd65dc18-c4b6-7b64-8266-a423f3f113e0/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/600x600bb.jpg',
     title: 'Honkai: Star Rail',
     developer: 'HoYoverse',
     year: 2023,
@@ -48,6 +52,8 @@ export const CATALOG = [
   },
   {
     slug: 'mobile-legends',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/87/dd/35/87dd3513-220a-4cae-2279-e84995ca703a/1_EN.jpg/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/d9/88/76/d9887647-00fd-09c8-8a61-c6c31a1bfe2a/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/600x600bb.jpg',
     title: 'Mobile Legends: Bang Bang',
     developer: 'Moonton',
     year: 2016,
@@ -65,6 +71,8 @@ export const CATALOG = [
   },
   {
     slug: 'call-of-duty-mobile',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/dc/7e/9b/dc7e9b41-15c4-a0f9-a7c8-743eaf2ee5aa/1_2688x1242.jpg/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/ac/6e/89/ac6e89d5-edca-7dea-3eaa-fe971293b3bc/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/600x600bb.jpg',
     title: 'Call of Duty: Mobile',
     developer: 'TiMi Studio Group / Activision (Garena in SEA)',
     year: 2019,
@@ -83,6 +91,8 @@ export const CATALOG = [
   },
   {
     slug: 'valorant',
+    image: 'https://cdn2.unrealengine.com/egs-valorant-riotgames-s1-2560x1440-4742836df9eb.jpg?w=920&h=518&resize=1&quality=medium',
+    cover: 'https://cdn2.unrealengine.com/egs-valorant-riotgames-s2-1200x1600-45ecd201ffcc.jpg?w=600&h=800&resize=1&quality=medium',
     title: 'VALORANT',
     developer: 'Riot Games',
     year: 2020,
@@ -100,6 +110,8 @@ export const CATALOG = [
   },
   {
     slug: 'league-of-legends',
+    image: 'https://cdn2.unrealengine.com/epic-2560x1440-2560x1440-2c0f0cf09af6.png?w=920&h=518&resize=1&quality=medium',
+    cover: 'https://cdn2.unrealengine.com/epic-1200x1600-1200x1600-62d626f118e0.png?w=600&h=800&resize=1&quality=medium',
     title: 'League of Legends',
     developer: 'Riot Games',
     year: 2009,
@@ -207,6 +219,8 @@ export const CATALOG = [
   },
   {
     slug: 'fortnite',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/bd/a7/e3/bda7e31a-7341-2cf8-d54f-880aec955620/EN_FNBR_42-00_C7S4_Shot_1_iOS_AppStore_Screenshot_iPhone_2868x1320.jpg/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a0/1d/74/a01d74d6-5975-c315-7db7-faa54a254b28/AppIcon-0-0-1x_U007epad-0-1-85-220.png/600x600bb.jpg',
     title: 'Fortnite',
     developer: 'Epic Games',
     year: 2017,
@@ -224,6 +238,8 @@ export const CATALOG = [
   },
   {
     slug: 'roblox',
+    image: 'https://images.rbxcdn.com/5348266ea6c5e67b19d6a814cbbb70f6.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/5d/b7/a25db7ef-5fd9-160f-3158-5753572d2fdb/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/600x600bb.jpg',
     title: 'Roblox',
     developer: 'Roblox Corporation',
     year: 2006,
@@ -332,6 +348,8 @@ export const CATALOG = [
   },
   {
     slug: 'minecraft',
+    image: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/07/47/6f/07476fcd-1ecf-18ca-e7f7-364d6c6cd5e1/pr_source.png/920x0w.jpg',
+    cover: 'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/3b/b7/24/3bb724be-0244-933a-af48-ad2195689877/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/600x600bb.jpg',
     title: 'Minecraft',
     developer: 'Mojang Studios',
     year: 2011,
@@ -597,9 +615,10 @@ export const CATALOG = [
     links: [steam(620)],
     steamId: 620,
   },
-].map((g) => ({
+].map(({ image, cover, ...g }) => ({
   ...g,
   // Portrait art for the vault card; wide art for the Discover card.
-  cover_url: g.steamId ? steamCover(g.steamId) : null,
-  image_url: g.steamId ? steamHeader(g.steamId) : null,
+  // Non-Steam games use official art from the App Store, Epic Games Store or the game's site.
+  cover_url: cover ?? (g.steamId ? steamCover(g.steamId) : null),
+  image_url: image ?? (g.steamId ? steamHeader(g.steamId) : null),
 }));
