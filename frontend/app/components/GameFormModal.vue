@@ -1,5 +1,5 @@
 <script setup>
-import { Gamepad2, Star } from 'lucide-vue-next';
+import { CheckCircle2, Gamepad2, Star } from 'lucide-vue-next';
 import { GENRES, PLATFORMS, STATUSES } from '~/utils/constants';
 
 const props = defineProps({
@@ -23,6 +23,7 @@ const empty = () => ({
 const form = reactive(empty());
 const errors = reactive({ title: '', cover_url: '', hours_played: '' });
 const previewFailed = ref(false);
+const filledNote = ref('');
 
 const isEdit = computed(() => !!props.game);
 
@@ -37,6 +38,7 @@ watch(
     errors.title = '';
     errors.cover_url = '';
     errors.hours_played = '';
+    filledNote.value = '';
   },
   { immediate: true },
 );
@@ -44,6 +46,25 @@ watch(
 watch(() => form.cover_url, () => (previewFailed.value = false));
 
 const validCoverUrl = computed(() => /^https?:\/\/\S+$/i.test(form.cover_url.trim()));
+
+// Picked a suggestion from the title search: fill in what we know about the game.
+function onPick(game) {
+  const filled = [];
+  if (game.cover_url) {
+    form.cover_url = game.cover_url;
+    filled.push('cover');
+  }
+  if (game.genre && !form.genre.trim()) {
+    form.genre = game.genre;
+    filled.push('genre');
+  }
+  if (game.platform && !form.platform.trim()) {
+    form.platform = game.platform;
+    filled.push('platform');
+  }
+  errors.title = '';
+  filledNote.value = filled.length ? `${filled.join(', ')} filled in from ${game.source}` : '';
+}
 
 function setRating(n) {
   form.rating = form.rating === n ? null : n;
@@ -74,21 +95,23 @@ function submit() {
     <form class="form" novalidate @submit.prevent="submit">
       <div class="group">
         <label for="f-title">Title <span class="req" aria-hidden="true">*</span></label>
-        <input
+        <TitleLookup
           id="f-title"
           v-model="form.title"
-          class="field"
           :class="{ invalid: errors.title }"
-          type="text"
           maxlength="200"
-          placeholder="e.g. Elden Ring"
-          autocomplete="off"
+          placeholder="Type to search, e.g. Elden Ring"
           autofocus
           required
           :aria-invalid="!!errors.title"
-          aria-describedby="f-title-err"
+          aria-describedby="f-title-err f-title-note"
+          @select="onPick"
         />
         <p v-if="errors.title" id="f-title-err" class="error">{{ errors.title }}</p>
+        <p v-else-if="filledNote" id="f-title-note" class="filled" role="status">
+          <CheckCircle2 :size="16" aria-hidden="true" />
+          {{ filledNote.charAt(0).toUpperCase() + filledNote.slice(1) }}
+        </p>
       </div>
 
       <div class="two-col">
@@ -259,6 +282,16 @@ label,
 
 .field.invalid {
   border-color: var(--red);
+}
+
+.filled {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .error {

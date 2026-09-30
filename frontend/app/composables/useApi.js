@@ -37,6 +37,7 @@ export function useApi() {
     },
     getStats: () => request('/stats'),
     getDiscover: () => request('/discover'),
+    lookupGames: (q) => request('/lookup', { query: { q } }),
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),
     deleteGame: (id) => request(`/games/${id}`, { method: 'DELETE' }),
