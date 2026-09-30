@@ -12,6 +12,7 @@ const emit = defineEmits(['close', 'started']);
 
 const api = useApi();
 const toast = useToast();
+const session = useSession();
 
 const allGames = ref([]);
 const filters = reactive({ status: 'backlog', platform: '' });
@@ -102,9 +103,9 @@ async function start() {
   if (!game) return;
   starting.value = true;
   try {
-    await api.updateGame(game.id, { status: 'playing' });
-    toast.success(`Have fun playing "${game.title}"!`);
-    emit('started', game);
+    if (game.status !== 'playing') await api.updateGame(game.id, { status: 'playing' });
+    // Starts the timer too (saving any other running session first).
+    if (await session.start(game)) emit('started', game);
   } catch (err) {
     toast.error(err.message);
   } finally {

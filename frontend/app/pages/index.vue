@@ -60,6 +60,29 @@ const saving = ref(false);
 
 const pickerOpen = ref(false);
 
+// ---------- Play sessions ----------
+const session = useSession();
+// Play time was logged (or a backlog game became "playing"): refresh hours and stats.
+watch(session.version, () => {
+  refreshGames();
+  refreshStats();
+});
+
+const detailGame = ref(null);
+const detailOpen = ref(false);
+function openDetail(game) {
+  detailGame.value = game;
+  detailOpen.value = true;
+}
+// Keep the open detail sheet in sync with the latest copy of the game.
+watch(games, (list) => {
+  if (detailGame.value) detailGame.value = list.find((g) => g.id === detailGame.value.id) ?? detailGame.value;
+});
+function editFromDetail(game) {
+  detailOpen.value = false;
+  openEdit(game);
+}
+
 function onStarted() {
   pickerOpen.value = false;
   refreshGames();
@@ -102,6 +125,7 @@ const vibe = computed(() => {
   const s = shownStats.value;
   if (!s) return 'Loading your vault...';
   if (!s.total) return "Your vault is empty. Let's add your first game!";
+  if (session.active.value) return `Enjoy your ${session.active.value.game_title} session! ⏱️`;
   const playing = games.value.find((g) => g.status === 'playing');
   if (playing) return `Still playing ${playing.title}? Don't forget to log your hours.`;
   if (s.completed === s.total) return "You've finished everything. Time to discover something new!";
@@ -333,6 +357,8 @@ async function toggleFavorite(game) {
         </Motion>
       </nav>
 
+      <PlayHeatmap v-if="shownStats?.total" />
+
       <Toolbar
         v-model:search="search"
         v-model:status="status"
@@ -349,6 +375,9 @@ async function toggleFavorite(game) {
         @delete="deleteGame"
         @add="openAdd"
         @clear-filters="clearFilters"
+        @open="openDetail"
+        @play="session.start"
+        @stop="session.stop()"
       />
     </main>
   </div>
@@ -362,6 +391,8 @@ async function toggleFavorite(game) {
   />
 
   <NextGamePicker :open="pickerOpen" @close="pickerOpen = false" @started="onStarted" />
+
+  <GameDetailSheet :open="detailOpen" :game="detailGame" @close="detailOpen = false" @edit="editFromDetail" />
 
 </template>
 

@@ -293,6 +293,16 @@ select.field option {
   }
 }
 
+/* ---------- "Now playing" bar ---------- */
+/* Room at the bottom of the page, and lift the mobile + button above the bar. */
+body.has-now-playing {
+  padding-bottom: 84px;
+}
+
+body.has-now-playing .fab.fab {
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px);
+}
+
 /* ---------- Page transitions ---------- */
 .page-enter-active,
 .page-leave-active {

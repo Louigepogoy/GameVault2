@@ -38,6 +38,16 @@ export function useApi() {
     getStats: () => request('/stats'),
     getDiscover: () => request('/discover'),
     lookupGames: (q) => request('/lookup', { query: { q } }),
+
+    // Play sessions
+    getActiveSession: () => request('/sessions/active'),
+    startSession: (gameId) => request('/sessions/start', { method: 'POST', body: { game_id: gameId } }),
+    stopSession: (id, note) => request(`/sessions/${id}/stop`, { method: 'POST', body: note ? { note } : {} }),
+    updateSessionNote: (id, note) => request(`/sessions/${id}`, { method: 'PATCH', body: { note } }),
+    discardSession: (id) => request(`/sessions/${id}`, { method: 'DELETE' }),
+    listSessions: ({ gameId, page = 1, limit = 10 } = {}) =>
+      request('/sessions', { query: { ...(gameId && { game_id: gameId }), page, limit } }),
+    getHeatmap: ({ weeks = 15, tz } = {}) => request('/stats/heatmap', { query: { weeks, ...(tz && { tz }) } }),
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),
     deleteGame: (id) => request(`/games/${id}`, { method: 'DELETE' }),

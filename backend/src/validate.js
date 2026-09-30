@@ -93,8 +93,38 @@ export function validateName(value) {
   return value.trim();
 }
 
-export function parseId(raw) {
+export function parseId(raw, what = 'game') {
   const id = Number(raw);
-  if (!Number.isInteger(id) || id <= 0) throw new HttpError(400, 'Invalid game id');
+  if (!Number.isInteger(id) || id <= 0) throw new HttpError(400, `Invalid ${what} id`);
   return id;
+}
+
+/** Whole number from a query string, clamped to [min, max]; `fallback` when missing. */
+export function parseIntParam(raw, { min, max, fallback, name }) {
+  if (raw === undefined || raw === '') return fallback;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < min || n > max) throw new HttpError(400, `${name} must be a whole number from ${min} to ${max}`);
+  return n;
+}
+
+export function validateNote(value) {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'string') throw new HttpError(400, 'note must be a string');
+  const note = value.trim();
+  if (note.length > 500) throw new HttpError(400, 'note must be at most 500 characters');
+  return note || null;
+}
+
+/** An IANA time zone name like "Asia/Manila". */
+export function validateTimeZone(value) {
+  if (value === undefined || value === '') return 'UTC';
+  if (typeof value !== 'string' || value.length > 64 || !/^[A-Za-z0-9_+-/]+$/.test(value)) {
+    throw new HttpError(400, 'tz must be a time zone name like Asia/Manila');
+  }
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value });
+  } catch {
+    throw new HttpError(400, `Unknown time zone: ${value}`);
+  }
+  return value;
 }

@@ -1,11 +1,14 @@
 <script setup>
-import { Clock, Gamepad2, Heart, Pencil, Star, Trash2 } from 'lucide-vue-next';
+import { Clock, Gamepad2, Heart, Pencil, Play, Square, Star, Trash2 } from 'lucide-vue-next';
 import { STATUS_LABELS, formatHours, timeAgo } from '~/utils/constants';
 
 const props = defineProps({
   game: { type: Object, required: true },
 });
-const emit = defineEmits(['toggle-favorite', 'edit', 'delete']);
+const emit = defineEmits(['toggle-favorite', 'edit', 'delete', 'open', 'play', 'stop']);
+
+const { active, busy } = useSession();
+const isPlaying = computed(() => active.value?.game_id === props.game.id);
 
 // "Added 3 days ago". Set after mount so server and browser clocks can't disagree.
 const added = ref('');
@@ -31,8 +34,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <article class="card game-card">
-    <div class="cover">
+  <article class="card game-card" :class="{ playing: isPlaying }">
+    <button type="button" class="cover" :aria-label="`Details and play sessions for ${game.title}`" @click="emit('open', game)">
       <img
         v-if="game.cover_url && !coverFailed"
         ref="coverImg"
@@ -45,10 +48,12 @@ onMounted(() => {
       <div v-else class="cover-placeholder" aria-hidden="true">
         <Gamepad2 :size="30" />
       </div>
-    </div>
+    </button>
 
     <div class="info">
-      <h3 class="title">{{ game.title }}</h3>
+      <h3 class="title">
+        <button type="button" class="title-btn" @click="emit('open', game)">{{ game.title }}</button>
+      </h3>
       <p class="meta">
         <span>{{ game.platform || 'Unknown platform' }}</span>
         <template v-if="game.genre">
@@ -81,6 +86,28 @@ onMounted(() => {
       <p v-if="game.notes" class="notes">{{ game.notes }}</p>
 
       <div class="actions">
+        <button
+          v-if="isPlaying"
+          type="button"
+          class="icon-btn play-btn is-playing"
+          :disabled="busy"
+          :aria-label="`Stop playing ${game.title}`"
+          title="Stop session"
+          @click="emit('stop', game)"
+        >
+          <Square :size="16" fill="currentColor" />
+        </button>
+        <button
+          v-else
+          type="button"
+          class="icon-btn play-btn"
+          :disabled="busy"
+          :aria-label="`Start playing ${game.title}`"
+          title="Start a play session"
+          @click="emit('play', game)"
+        >
+          <Play :size="18" />
+        </button>
         <button
           type="button"
           class="icon-btn fav-btn"
@@ -133,7 +160,38 @@ onMounted(() => {
   }
 }
 
+.game-card.playing {
+  border-color: color-mix(in srgb, var(--green) 55%, transparent);
+  box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--green) 30%, transparent);
+}
+
+.title-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.title-btn:hover {
+  color: var(--accent-soft);
+}
+
+.play-btn {
+  color: var(--green);
+}
+
+.play-btn.is-playing {
+  color: #fff;
+  border-color: transparent;
+  background: var(--red);
+}
+
 .cover {
+  padding: 0;
+  cursor: pointer;
   width: 92px;
   aspect-ratio: 3 / 4;
   flex-shrink: 0;

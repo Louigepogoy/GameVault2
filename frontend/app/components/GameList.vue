@@ -5,7 +5,7 @@ defineProps({
   // True when no search/filter is active, so an empty list means an empty vault.
   unfiltered: { type: Boolean, default: false },
 });
-defineEmits(['toggle-favorite', 'edit', 'delete', 'add', 'clear-filters']);
+defineEmits(['toggle-favorite', 'edit', 'delete', 'add', 'clear-filters', 'open', 'play', 'stop']);
 
 // Stagger the cards only on first load; later changes (sort, filter) just glide into place.
 const firstLoad = ref(true);
@@ -61,6 +61,9 @@ onMounted(() => setTimeout(() => (firstLoad.value = false), 800));
             @toggle-favorite="$emit('toggle-favorite', $event)"
             @edit="$emit('edit', $event)"
             @delete="$emit('delete', $event)"
+            @open="$emit('open', $event)"
+            @play="$emit('play', $event)"
+            @stop="$emit('stop', $event)"
           />
         </Motion>
       </AnimatePresence>

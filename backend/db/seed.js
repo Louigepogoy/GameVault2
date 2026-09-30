@@ -91,12 +91,14 @@ const games = [
   },
 ];
 
-// Usage: npm run db:seed [-- --email you@example.com] [-- --force]
+// Usage: npm run db:seed [-- --email you@example.com] [-- --force] [-- --tz Asia/Manila]
 // Seeds the games into that account (default: the oldest account).
 const args = process.argv.slice(2);
 const force = args.includes('--force');
 const emailArg = args[args.indexOf('--email') + 1];
 const email = args.includes('--email') && emailArg ? emailArg.toLowerCase() : null;
+// Time zone for the sample sessions, so "evening" means evening where you are.
+const tz = args.includes('--tz') ? args[args.indexOf('--tz') + 1] : 'Asia/Manila';
 
 const [user] = email
   ? await sql`SELECT id, email FROM users WHERE lower(email) = ${email}`
@@ -122,3 +124,39 @@ for (const g of [...games].reverse()) {
   `;
 }
 console.log(`Seeded ${games.length} games for ${user.email}.`);
+
+// ---------- Sample play sessions (last 15 weeks) ----------
+// Evenings mostly, some weekend marathons, one late-night session, and gaps, so the
+// heatmap and session history look like a real person played. Deterministic, so every
+// seed looks the same.
+let state = 42;
+const rand = () => ((state = (state * 1103515245 + 12345) % 2 ** 31) / 2 ** 31);
+const NOTES = ['Beat a tough boss!', 'Explored a new area', 'Grinding levels', 'Finished a side quest', null, null, null];
+
+const played = await sql`
+  SELECT id, status FROM games
+  WHERE user_id = ${user.id} AND status IN ('playing', 'completed', 'dropped')
+  ORDER BY id
+`;
+const sessions = [];
+for (let daysAgo = 104; daysAgo >= 1; daysAgo--) {
+  if (rand() < 0.55) continue; // not every day
+  const weekend = [0, 6].includes(new Date(Date.now() - daysAgo * 864e5).getDay());
+  const game = played[Math.floor(rand() * played.length)];
+  const minutes = Math.round((weekend ? 60 + rand() * 180 : 20 + rand() * 90) / 5) * 5;
+  const lateNight = daysAgo === 12; // one 1 AM session
+  const startHour = lateNight ? 1 : weekend ? 13 + Math.floor(rand() * 6) : 19 + Math.floor(rand() * 3);
+  sessions.push({ game: game.id, daysAgo, startHour, minutes, note: NOTES[Math.floor(rand() * NOTES.length)] });
+}
+for (const x of sessions) {
+  await sql`
+    INSERT INTO play_sessions (user_id, game_id, started_at, ended_at, duration_minutes, note)
+    VALUES (
+      ${user.id}, ${x.game},
+      (date_trunc('day', now() AT TIME ZONE ${tz}) - make_interval(days => ${x.daysAgo}) + make_interval(hours => ${x.startHour})) AT TIME ZONE ${tz},
+      (date_trunc('day', now() AT TIME ZONE ${tz}) - make_interval(days => ${x.daysAgo}) + make_interval(hours => ${x.startHour}, mins => ${x.minutes})) AT TIME ZONE ${tz},
+      ${x.minutes}, ${x.note}
+    )
+  `;
+}
+console.log(`Seeded ${sessions.length} play sessions.`);

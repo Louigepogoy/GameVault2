@@ -48,3 +48,21 @@ ALTER TABLE games ADD COLUMN IF NOT EXISTS user_id INT REFERENCES users (id) ON 
 CREATE INDEX IF NOT EXISTS games_user_idx ON games (user_id);
 CREATE INDEX IF NOT EXISTS games_status_idx ON games (status);
 CREATE INDEX IF NOT EXISTS games_title_lower_idx ON games (lower(title));
+
+-- Play sessions: a timer per game. ended_at IS NULL means the session is still running.
+CREATE TABLE IF NOT EXISTS play_sessions (
+  id                SERIAL PRIMARY KEY,
+  user_id           INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  game_id           INT NOT NULL REFERENCES games (id) ON DELETE CASCADE,
+  started_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ended_at          TIMESTAMPTZ,
+  duration_minutes  INT CHECK (duration_minutes >= 0),
+  note              TEXT,
+  CHECK (ended_at IS NULL OR ended_at >= started_at)
+);
+
+CREATE INDEX IF NOT EXISTS play_sessions_user_idx ON play_sessions (user_id, started_at DESC);
+CREATE INDEX IF NOT EXISTS play_sessions_game_idx ON play_sessions (game_id, started_at DESC);
+
+-- At most one running session per user.
+CREATE UNIQUE INDEX IF NOT EXISTS play_sessions_one_active_idx ON play_sessions (user_id) WHERE ended_at IS NULL;

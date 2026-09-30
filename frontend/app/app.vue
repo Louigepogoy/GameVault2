@@ -19,6 +19,7 @@ useHead({
   <!-- reduced-motion="user": follow the device's "reduce motion" setting. -->
   <MotionConfig reduced-motion="user">
     <NuxtPage />
+    <NowPlayingBar />
     <ToastContainer />
   </MotionConfig>
 </template>
