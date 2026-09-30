@@ -1,7 +1,10 @@
 <script setup>
 import { Dices, Gamepad2, Play } from 'lucide-vue-next';
+import { STATUSES, STATUS_LABELS } from '~/utils/constants';
 
-// Picks a random game from the backlog, with a short slot-machine shuffle.
+// Picks a random game (by default from the backlog), with a short slot-machine shuffle.
+// Filters: status and platform. There is no "estimated length" field on games yet,
+// so a length filter is left out rather than guessing.
 const props = defineProps({
   open: { type: Boolean, default: false },
 });
@@ -10,7 +13,8 @@ const emit = defineEmits(['close', 'started']);
 const api = useApi();
 const toast = useToast();
 
-const pool = ref([]);
+const allGames = ref([]);
+const filters = reactive({ status: 'backlog', platform: '' });
 const current = ref(null);
 const loading = ref(false);
 const rolling = ref(false);
@@ -18,6 +22,35 @@ const starting = ref(false);
 const error = ref('');
 const coverFailed = ref(false);
 let timer;
+
+const platforms = computed(() =>
+  [...new Set(allGames.value.map((g) => g.platform).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+);
+
+const pool = computed(() =>
+  allGames.value.filter(
+    (g) =>
+      (filters.status === 'any' || g.status === filters.status) &&
+      (!filters.platform || g.platform === filters.platform),
+  ),
+);
+
+const filtersAreDefault = computed(() => filters.status === 'backlog' && !filters.platform);
+const poolLabel = computed(() => {
+  const n = pool.value.length;
+  const what = filters.status === 'any' ? 'game' : `${STATUS_LABELS[filters.status].toLowerCase()} game`;
+  return `Picked from ${n} ${what}${n === 1 ? '' : 's'}${filters.platform ? ` on ${filters.platform}` : ''}`;
+});
+
+function resetFilters() {
+  filters.status = 'backlog';
+  filters.platform = '';
+}
+
+// New filters -> new pick.
+watch(() => [filters.status, filters.platform], () => {
+  if (!loading.value) roll();
+});
 
 const randomFrom = (list) => list[Math.floor(Math.random() * list.length)] ?? null;
 
@@ -54,7 +87,8 @@ async function load() {
   error.value = '';
   current.value = null;
   try {
-    pool.value = await api.listGames({ status: 'backlog' });
+    // One request; filtering happens here so changing a filter is instant.
+    allGames.value = await api.listGames();
     roll();
   } catch (err) {
     error.value = err.message;
@@ -103,13 +137,40 @@ onBeforeUnmount(() => clearInterval(timer));
 
     <p v-else-if="error" class="form-alert form-alert-error" role="alert">{{ error }}</p>
 
-    <div v-else-if="!current" class="empty">
-      <div class="emoji" aria-hidden="true">🎉</div>
-      <p class="empty-title">Your backlog is empty!</p>
-      <p class="muted">Add games with the <strong>Backlog</strong> status and I'll pick one for you.</p>
-    </div>
-
     <template v-else>
+      <div v-if="allGames.length" class="filters">
+        <label for="pick-status" class="sr-only">Status</label>
+        <select id="pick-status" v-model="filters.status" class="field" :disabled="rolling">
+          <option v-for="s in STATUSES" :key="s.value" :value="s.value">{{ s.label }}</option>
+          <option value="any">Any status</option>
+        </select>
+        <label for="pick-platform" class="sr-only">Platform</label>
+        <select id="pick-platform" v-model="filters.platform" class="field" :disabled="rolling">
+          <option value="">Any platform</option>
+          <option v-for="p in platforms" :key="p" :value="p">{{ p }}</option>
+        </select>
+      </div>
+
+      <div v-if="!allGames.length" class="empty">
+        <div class="emoji" aria-hidden="true">🎮</div>
+        <p class="empty-title">Your vault is empty</p>
+        <p class="muted">Add a few games first and I'll pick one for you.</p>
+      </div>
+
+      <div v-else-if="!current && filtersAreDefault" class="empty">
+        <div class="emoji" aria-hidden="true">🎉</div>
+        <p class="empty-title">Your backlog is empty!</p>
+        <p class="muted">Nothing waiting. Try <strong>Any status</strong> above, or add games to your Backlog.</p>
+      </div>
+
+      <div v-else-if="!current" class="empty">
+        <div class="emoji" aria-hidden="true">🤔</div>
+        <p class="empty-title">No games match these filters</p>
+        <p class="muted">Try another status or platform.</p>
+        <button type="button" class="btn btn-ghost reset" @click="resetFilters">Reset filters</button>
+      </div>
+
+      <template v-else>
       <div class="pick" :class="{ rolling }" :aria-live="rolling ? 'off' : 'polite'">
         <!-- Re-keyed when the shuffle lands, so the final pick pops in. -->
         <Motion
@@ -136,7 +197,7 @@ onBeforeUnmount(() => clearInterval(timer));
         </p>
       </div>
 
-      <p class="pool muted">Picked from {{ pool.length }} backlog game{{ pool.length === 1 ? '' : 's' }}</p>
+      <p class="pool muted">{{ poolLabel }}</p>
 
       <div class="actions">
         <button
@@ -153,11 +214,23 @@ onBeforeUnmount(() => clearInterval(timer));
           {{ starting ? 'Starting...' : 'Start Playing' }}
         </button>
       </div>
+      </template>
     </template>
   </BaseSheet>
 </template>
 
 <style scoped>
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.reset {
+  margin-top: 12px;
+}
+
 .pick {
   display: flex;
   flex-direction: column;
