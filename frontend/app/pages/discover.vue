@@ -94,114 +94,116 @@ async function addToVault(game, platform = game.platforms[0]) {
 </script>
 
 <template>
-  <div class="app">
-    <header class="header">
-      <NuxtLink to="/" class="icon-btn" aria-label="Back to your games">
-        <ArrowLeft :size="20" />
-      </NuxtLink>
-      <div class="heading">
-        <h1 class="page-title">Discover</h1>
-        <p class="page-sub">Game suggestions, what they're about, and where to get them</p>
-      </div>
-      <ThemeToggle />
-    </header>
-
-    <main class="main">
-      <!-- Loading skeleton -->
-      <div v-if="loading" class="grid" aria-hidden="true">
-        <div v-for="n in 6" :key="n" class="card sk-card">
-          <div class="skeleton sk-art" />
-          <div class="skeleton sk-line" style="width: 60%" />
-          <div class="skeleton sk-line" style="width: 85%" />
+  <div class="page">
+    <div class="app">
+      <header class="header">
+        <NuxtLink to="/" class="icon-btn" aria-label="Back to your games">
+          <ArrowLeft :size="20" />
+        </NuxtLink>
+        <div class="heading">
+          <h1 class="page-title">Discover</h1>
+          <p class="page-sub">Game suggestions, what they're about, and where to get them</p>
         </div>
-      </div>
+        <ThemeToggle />
+      </header>
 
-      <template v-else>
-        <!-- Recommended for you -->
-        <section v-if="showRecommended" aria-labelledby="rec-title">
-          <h2 id="rec-title" class="section-title">
-            <Sparkles :size="20" aria-hidden="true" />
-            Recommended for you
-          </h2>
-          <p class="section-sub">Based on the genres you play and rate highly</p>
-          <div class="grid">
-            <DiscoverCard
-              v-for="g in recommended"
-              :key="`rec-${g.slug}`"
-              :game="g"
-              :adding="addingSlug === g.slug"
-              @open="openGame"
-              @add="addToVault"
-            />
+      <main class="main">
+        <!-- Loading skeleton -->
+        <div v-if="loading" class="grid" aria-hidden="true">
+          <div v-for="n in 6" :key="n" class="card sk-card">
+            <div class="skeleton sk-art" />
+            <div class="skeleton sk-line" style="width: 60%" />
+            <div class="skeleton sk-line" style="width: 85%" />
           </div>
-        </section>
+        </div>
 
-        <!-- All games + filters -->
-        <section aria-labelledby="all-title">
-          <h2 id="all-title" class="section-title">{{ showRecommended ? 'More games to try' : 'Game suggestions' }}</h2>
-
-          <div class="filters">
-            <div class="search">
-              <Search class="search-icon" :size="18" aria-hidden="true" />
-              <label for="discover-search" class="sr-only">Search suggestions</label>
-              <input
-                id="discover-search"
-                v-model="search"
-                type="search"
-                class="field search-input"
-                placeholder="Search games, genres, developers..."
-                autocomplete="off"
+        <template v-else>
+          <!-- Recommended for you -->
+          <section v-if="showRecommended" aria-labelledby="rec-title">
+            <h2 id="rec-title" class="section-title">
+              <Sparkles :size="20" aria-hidden="true" />
+              Recommended for you
+            </h2>
+            <p class="section-sub">Based on the genres you play and rate highly</p>
+            <div class="grid">
+              <DiscoverCard
+                v-for="g in recommended"
+                :key="`rec-${g.slug}`"
+                :game="g"
+                :adding="addingSlug === g.slug"
+                @open="openGame"
+                @add="addToVault"
               />
-              <button v-if="search" type="button" class="clear-btn" aria-label="Clear search" @click="search = ''">
-                <X :size="16" />
+            </div>
+          </section>
+
+          <!-- All games + filters -->
+          <section aria-labelledby="all-title">
+            <h2 id="all-title" class="section-title">{{ showRecommended ? 'More games to try' : 'Game suggestions' }}</h2>
+
+            <div class="filters">
+              <div class="search">
+                <Search class="search-icon" :size="18" aria-hidden="true" />
+                <label for="discover-search" class="sr-only">Search suggestions</label>
+                <input
+                  id="discover-search"
+                  v-model="search"
+                  type="search"
+                  class="field search-input"
+                  placeholder="Search games, genres, developers..."
+                  autocomplete="off"
+                />
+                <button v-if="search" type="button" class="clear-btn" aria-label="Clear search" @click="search = ''">
+                  <X :size="16" />
+                </button>
+              </div>
+              <label for="discover-genre" class="sr-only">Genre</label>
+              <select id="discover-genre" v-model="genre" class="field genre-select">
+                <option value="">All Genres</option>
+                <option v-for="g in genres" :key="g" :value="g">{{ g }}</option>
+              </select>
+            </div>
+
+            <div class="chips" role="group" aria-label="Filter suggestions">
+              <button
+                v-for="f in FILTERS"
+                :key="f.value"
+                type="button"
+                class="chip"
+                :class="{ active: filter === f.value }"
+                :aria-pressed="filter === f.value"
+                @click="filter = f.value"
+              >
+                {{ f.label }}
               </button>
             </div>
-            <label for="discover-genre" class="sr-only">Genre</label>
-            <select id="discover-genre" v-model="genre" class="field genre-select">
-              <option value="">All Genres</option>
-              <option v-for="g in genres" :key="g" :value="g">{{ g }}</option>
-            </select>
-          </div>
 
-          <div class="chips" role="group" aria-label="Filter suggestions">
-            <button
-              v-for="f in FILTERS"
-              :key="f.value"
-              type="button"
-              class="chip"
-              :class="{ active: filter === f.value }"
-              :aria-pressed="filter === f.value"
-              @click="filter = f.value"
-            >
-              {{ f.label }}
-            </button>
-          </div>
+            <div v-if="filtered.length" class="grid">
+              <DiscoverCard
+                v-for="g in filtered"
+                :key="g.slug"
+                :game="g"
+                :adding="addingSlug === g.slug"
+                @open="openGame"
+                @add="addToVault"
+              />
+            </div>
+            <EmptyState v-else title="No games match." message="Try another search or filter.">
+              <button type="button" class="btn btn-ghost" @click="clearFilters">Clear filters</button>
+            </EmptyState>
+          </section>
+        </template>
+      </main>
+    </div>
 
-          <div v-if="filtered.length" class="grid">
-            <DiscoverCard
-              v-for="g in filtered"
-              :key="g.slug"
-              :game="g"
-              :adding="addingSlug === g.slug"
-              @open="openGame"
-              @add="addToVault"
-            />
-          </div>
-          <EmptyState v-else title="No games match." message="Try another search or filter.">
-            <button type="button" class="btn btn-ghost" @click="clearFilters">Clear filters</button>
-          </EmptyState>
-        </section>
-      </template>
-    </main>
+    <DiscoverSheet
+      :open="sheetOpen"
+      :game="selected"
+      :adding="!!selected && addingSlug === selected.slug"
+      @close="sheetOpen = false"
+      @add="addToVault"
+    />
   </div>
-
-  <DiscoverSheet
-    :open="sheetOpen"
-    :game="selected"
-    :adding="!!selected && addingSlug === selected.slug"
-    @close="sheetOpen = false"
-    @add="addToVault"
-  />
 </template>
 
 <style scoped>

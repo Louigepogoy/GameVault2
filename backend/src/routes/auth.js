@@ -36,7 +36,8 @@ function rateLimit({ windowMs, max }) {
     next();
   };
 }
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
+// AUTH_RATE_LIMIT_MAX raises the limit where many sign-ups come from one address (tests).
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: Number(process.env.AUTH_RATE_LIMIT_MAX) || 20 });
 
 const body = (req) => {
   if (!req.body || typeof req.body !== 'object') throw new HttpError(400, 'Request body must be a JSON object');

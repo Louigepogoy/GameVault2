@@ -10,7 +10,11 @@
     "generate:app": "nuxt generate --dotenv .env.capacitor",
     "cap:sync": "npm run generate:app && npx cap sync",
     "generate-pwa-assets": "pwa-assets-generator && node scripts/full-bleed-icons.mjs",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@quasar/extras": "^2.1.0",
@@ -21,9 +25,17 @@
     "vue": "^3.5.12"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/test-utils": "^4.3.2",
     "@vite-pwa/assets-generator": "^1.0.0",
     "@vite-pwa/nuxt": "^1.0.4",
+    "@vue/test-utils": "^2.5.1",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "happy-dom": "^20.14.5",
     "nuxt-quasar-ui": "^3.1.1",
-    "sharp": "^0.35.5"
+    "prettier": "^3.9.9",
+    "sharp": "^0.35.5",
+    "vitest": "^5.0.3"
   }
 }

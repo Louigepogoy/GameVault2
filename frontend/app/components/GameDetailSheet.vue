@@ -32,7 +32,8 @@ function stopFromHere() {
 async function load({ more = false } = {}) {
   if (!props.game) return;
   error.value = '';
-  more ? (loadingMore.value = true) : (loading.value = true);
+  if (more) loadingMore.value = true;
+  else loading.value = true;
   try {
     const next = more ? page.value + 1 : 1;
     const res = await api.listSessions({ gameId: props.game.id, page: next, limit: PAGE_SIZE });

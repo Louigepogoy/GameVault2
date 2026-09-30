@@ -34,7 +34,6 @@ app.use('/api/achievements', requireAuth, achievementsRouter);
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
 // Central error handler: always respond with JSON.
-// eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Invalid JSON body' });
@@ -46,5 +45,10 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: expected || status < 500 ? err.message : 'Internal server error' });
 });
 
-const port = Number(process.env.PORT) || 4000;
-app.listen(port, () => console.log(`GameVault API listening on http://localhost:${port}`));
+// Tests import the app without starting a server.
+if (process.env.NODE_ENV !== 'test') {
+  const port = Number(process.env.PORT) || 4000;
+  app.listen(port, () => console.log(`GameVault API listening on http://localhost:${port}`));
+}
+
+export default app;

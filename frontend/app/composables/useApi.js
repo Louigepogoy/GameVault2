@@ -1,3 +1,10 @@
+/** Turn a failed request into a message a person can act on. */
+export function friendlyError(err) {
+  if (err?.data?.error) return err.data.error;
+  if (err?.response) return `Request failed (${err.response.status})`;
+  return 'Could not reach the server. Check your connection.';
+}
+
 export function useApi() {
   const { apiUrl } = useRuntimeConfig().public;
   const baseURL = `${apiUrl.replace(/\/+$/, '')}/api`;
@@ -28,9 +35,7 @@ export function useApi() {
     } catch (err) {
       // Expired or invalid session: sign out and go to the login page.
       if (err.response?.status === 401 && sentToken) await logout();
-      if (err.data?.error) throw new Error(err.data.error);
-      if (err.response) throw new Error(`Request failed (${err.response.status})`);
-      throw new Error('Could not reach the server. Check your connection.');
+      throw new Error(friendlyError(err), { cause: err });
     }
   }
 

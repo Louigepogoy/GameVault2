@@ -1,0 +1,13 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    setupFiles: ['./test/setup.js'],
+    // A real Postgres (TEST_DATABASE_URL) is shared, so run files one at a time.
+    // Without it each file gets its own in-memory PGlite database and can run in parallel.
+    fileParallelism: !process.env.TEST_DATABASE_URL,
+    testTimeout: 20000,
+    hookTimeout: 60000,
+  },
+});

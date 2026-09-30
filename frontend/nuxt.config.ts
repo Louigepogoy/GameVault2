@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   ssr: !process.env.CAPACITOR,
 
   devtools: { enabled: false },
-  modules: ['@vite-pwa/nuxt', 'nuxt-quasar-ui', 'motion-v/nuxt'],
+  // The PWA module's virtual imports don't resolve under Vitest, and tests don't need it.
+  modules: [...(process.env.VITEST ? [] : ['@vite-pwa/nuxt']), 'nuxt-quasar-ui', 'motion-v/nuxt', '@nuxt/eslint'],
   css: ['~/assets/css/main.css'],
 
   // Quasar components (QBtn, QDialog, ...) are auto-imported. Its global styles are

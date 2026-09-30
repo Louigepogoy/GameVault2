@@ -301,100 +301,102 @@ async function toggleFavorite(game) {
 </script>
 
 <template>
-  <div class="app">
-    <header class="header">
-      <AppLogo tag="h1" :size="46" tagline="Your games, all in one place" class="brand" />
-      <div class="header-actions">
-        <span v-if="user" class="user-name">{{ user.name }}</span>
-        <ThemeToggle />
-        <button type="button" class="icon-btn" aria-label="Log out" title="Log out" @click="logout">
-          <LogOut :size="20" />
-        </button>
-      </div>
-    </header>
+  <div class="page">
+    <div class="app">
+      <header class="header">
+        <AppLogo tag="h1" :size="46" tagline="Your games, all in one place" class="brand" />
+        <div class="header-actions">
+          <span v-if="user" class="user-name">{{ user.name }}</span>
+          <ThemeToggle />
+          <button type="button" class="icon-btn" aria-label="Log out" title="Log out" @click="logout">
+            <LogOut :size="20" />
+          </button>
+        </div>
+      </header>
 
-    <main class="main">
-      <Motion
-        as="section"
-        class="welcome"
-        aria-live="polite"
-        :initial="{ opacity: 0, y: 8 }"
-        :animate="{ opacity: 1, y: 0 }"
-        :transition="{ duration: 0.4, ease: 'easeOut' }"
-      >
-        <h2 class="welcome-title">{{ greeting }}, {{ firstName }} <span class="wave" aria-hidden="true">👋</span></h2>
-        <p class="welcome-sub">{{ vibe }}</p>
-      </Motion>
-
-      <StatsCards :stats="shownStats" />
-      <ProgressBar :completed="shownStats?.completed ?? 0" :total="shownStats?.total ?? 0" />
-
-      <nav class="quick-actions" aria-label="Quick actions">
+      <main class="main">
         <Motion
-          v-for="(action, i) in quickActions"
-          :key="action.key"
-          class="quick-wrap"
-          :initial="{ opacity: 0, y: 12 }"
+          as="section"
+          class="welcome"
+          aria-live="polite"
+          :initial="{ opacity: 0, y: 8 }"
           :animate="{ opacity: 1, y: 0 }"
-          :transition="{ type: 'spring', stiffness: 260, damping: 24, delay: 0.25 + i * 0.07 }"
-          :while-hover="{ y: -3 }"
-          :while-press="{ scale: 0.98 }"
+          :transition="{ duration: 0.4, ease: 'easeOut' }"
         >
-          <component
-            :is="action.to ? NuxtLinkComponent : 'button'"
-            :to="action.to"
-            :type="action.to ? undefined : 'button'"
-            class="card quick"
-            :style="{ '--c': action.color }"
-            @click="action.onClick?.()"
-          >
-            <span class="quick-icon"><component :is="action.icon" :size="22" /></span>
-            <span class="quick-text">
-              <strong>{{ action.title }}</strong>
-              <span>{{ action.text }}</span>
-            </span>
-            <ChevronRight class="quick-arrow" :size="20" aria-hidden="true" />
-          </component>
+          <h2 class="welcome-title">{{ greeting }}, {{ firstName }} <span class="wave" aria-hidden="true">👋</span></h2>
+          <p class="welcome-sub">{{ vibe }}</p>
         </Motion>
-      </nav>
 
-      <PlayHeatmap v-if="shownStats?.total" />
+        <StatsCards :stats="shownStats" />
+        <ProgressBar :completed="shownStats?.completed ?? 0" :total="shownStats?.total ?? 0" />
 
-      <Toolbar
-        v-model:search="search"
-        v-model:status="status"
-        v-model:sort="sort"
-        v-model:favorites="favorites"
-        @add="openAdd"
-      />
-      <GameList
-        :games="games"
-        :loading="loading"
-        :unfiltered="unfiltered"
-        @toggle-favorite="toggleFavorite"
-        @edit="openEdit"
-        @delete="deleteGame"
-        @add="openAdd"
-        @clear-filters="clearFilters"
-        @open="openDetail"
-        @play="session.start"
-        @stop="session.stop()"
-      />
-    </main>
+        <nav class="quick-actions" aria-label="Quick actions">
+          <Motion
+            v-for="(action, i) in quickActions"
+            :key="action.key"
+            class="quick-wrap"
+            :initial="{ opacity: 0, y: 12 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ type: 'spring', stiffness: 260, damping: 24, delay: 0.25 + i * 0.07 }"
+            :while-hover="{ y: -3 }"
+            :while-press="{ scale: 0.98 }"
+          >
+            <component
+              :is="action.to ? NuxtLinkComponent : 'button'"
+              :to="action.to"
+              :type="action.to ? undefined : 'button'"
+              class="card quick"
+              :style="{ '--c': action.color }"
+              @click="action.onClick?.()"
+            >
+              <span class="quick-icon"><component :is="action.icon" :size="22" /></span>
+              <span class="quick-text">
+                <strong>{{ action.title }}</strong>
+                <span>{{ action.text }}</span>
+              </span>
+              <ChevronRight class="quick-arrow" :size="20" aria-hidden="true" />
+            </component>
+          </Motion>
+        </nav>
+
+        <PlayHeatmap v-if="shownStats?.total" />
+
+        <Toolbar
+          v-model:search="search"
+          v-model:status="status"
+          v-model:sort="sort"
+          v-model:favorites="favorites"
+          @add="openAdd"
+        />
+        <GameList
+          :games="games"
+          :loading="loading"
+          :unfiltered="unfiltered"
+          @toggle-favorite="toggleFavorite"
+          @edit="openEdit"
+          @delete="deleteGame"
+          @add="openAdd"
+          @clear-filters="clearFilters"
+          @open="openDetail"
+          @play="session.start"
+          @stop="session.stop()"
+        />
+      </main>
+    </div>
+
+    <GameFormModal
+      :open="formOpen"
+      :game="editingGame"
+      :saving="saving"
+      @close="closeForm"
+      @submit="saveGame"
+    />
+
+    <NextGamePicker :open="pickerOpen" @close="pickerOpen = false" @started="onStarted" />
+
+    <GameDetailSheet :open="detailOpen" :game="detailGame" @close="detailOpen = false" @edit="editFromDetail" />
+
   </div>
-
-  <GameFormModal
-    :open="formOpen"
-    :game="editingGame"
-    :saving="saving"
-    @close="closeForm"
-    @submit="saveGame"
-  />
-
-  <NextGamePicker :open="pickerOpen" @close="pickerOpen = false" @started="onStarted" />
-
-  <GameDetailSheet :open="detailOpen" :game="detailGame" @close="detailOpen = false" @edit="editFromDetail" />
-
 </template>
 
 <style scoped>

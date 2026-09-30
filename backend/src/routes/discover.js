@@ -7,7 +7,8 @@ const router = Router();
 
 const RECOMMEND_COUNT = 6;
 
-watchSteamArt(CATALOG.filter((g) => g.steamId).map((g) => g.steamId));
+// No live Steam lookups during tests.
+if (process.env.NODE_ENV !== 'test') watchSteamArt(CATALOG.filter((g) => g.steamId).map((g) => g.steamId));
 
 const norm = (s) => (s || '').trim().toLowerCase();
 
