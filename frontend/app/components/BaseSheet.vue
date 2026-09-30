@@ -2,6 +2,7 @@
 import { X } from 'lucide-vue-next';
 
 // Dialog that is a bottom sheet on phones and a centered modal on larger screens.
+// On phones it slides up with a spring and can be swiped down to close.
 const props = defineProps({
   open: { type: Boolean, default: false },
   title: { type: String, required: true },
@@ -11,6 +12,32 @@ const emit = defineEmits(['close']);
 
 const panel = ref(null);
 let lastFocused = null;
+
+// Phone layout (bottom sheet) vs. larger screens (centered modal).
+const isPhone = ref(false);
+let phoneQuery;
+const syncPhone = () => (isPhone.value = phoneQuery.matches);
+onMounted(() => {
+  phoneQuery = window.matchMedia('(max-width: 639px)');
+  syncPhone();
+  phoneQuery.addEventListener('change', syncPhone);
+});
+
+const sheetMotion = computed(() =>
+  isPhone.value
+    ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+    : { initial: { opacity: 0, y: 24, scale: 0.96 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 16, scale: 0.97 } },
+);
+const spring = { type: 'spring', stiffness: 380, damping: 34 };
+
+// Swipe down from the handle/header to close (phones only), like native sheets.
+const dragControls = useDragControls();
+function startDrag(e) {
+  if (isPhone.value) dragControls.start(e);
+}
+function onDragEnd(_e, info) {
+  if (info.offset.y > 110 || info.velocity.y > 600) emit('close');
+}
 
 function onKeydown(e) {
   if (e.key === 'Escape') emit('close');
@@ -39,35 +66,57 @@ watch(
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
   document.removeEventListener('keydown', onKeydown);
+  phoneQuery?.removeEventListener('change', syncPhone);
 });
 </script>
 
 <template>
   <Teleport to="#teleports">
-    <Transition name="sheet">
-      <div v-if="open" class="overlay" @click.self="emit('close')">
-        <div
-          ref="panel"
+    <AnimatePresence>
+      <Motion
+        v-if="open"
+        key="overlay"
+        class="overlay"
+        :initial="{ opacity: 0 }"
+        :animate="{ opacity: 1 }"
+        :exit="{ opacity: 0 }"
+        :transition="{ duration: 0.2 }"
+        @click.self="emit('close')"
+      >
+        <Motion
           class="sheet"
           :class="`sheet-${size}`"
           role="dialog"
           aria-modal="true"
           :aria-label="title"
-          tabindex="-1"
+          :initial="sheetMotion.initial"
+          :animate="sheetMotion.animate"
+          :exit="sheetMotion.exit"
+          :transition="spring"
+          :drag="isPhone ? 'y' : false"
+          :drag-controls="dragControls"
+          :drag-listener="false"
+          :drag-constraints="{ top: 0, bottom: 0 }"
+          :drag-elastic="{ top: 0, bottom: 0.7 }"
+          @drag-end="onDragEnd"
         >
-          <div class="handle" aria-hidden="true" />
-          <header class="sheet-header">
-            <h2>{{ title }}</h2>
-            <button type="button" class="icon-btn" aria-label="Close" @click="emit('close')">
-              <X :size="20" />
-            </button>
-          </header>
-          <div class="sheet-body">
-            <slot />
+          <div ref="panel" class="sheet-inner" tabindex="-1">
+            <div class="grab" @pointerdown="startDrag">
+              <div class="handle" aria-hidden="true" />
+              <header class="sheet-header">
+                <h2>{{ title }}</h2>
+                <button type="button" class="icon-btn" aria-label="Close" @click="emit('close')">
+                  <X :size="20" />
+                </button>
+              </header>
+            </div>
+            <div class="sheet-body">
+              <slot />
+            </div>
           </div>
-        </div>
-      </div>
-    </Transition>
+        </Motion>
+      </Motion>
+    </AnimatePresence>
   </Teleport>
 </template>
 
@@ -95,7 +144,19 @@ onBeforeUnmount(() => {
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -10px 40px rgba(139, 92, 246, 0.25);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sheet-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0; /* lets .sheet-body scroll inside the max-height */
   outline: none;
+}
+
+/* The grab area can be dragged down on phones; keep the browser from scrolling instead. */
+.grab {
+  touch-action: none;
 }
 
 .handle {
@@ -127,28 +188,7 @@ h2 {
   padding: 4px 20px 20px;
 }
 
-/* Mobile: slide up from the bottom */
-.sheet-enter-active,
-.sheet-leave-active {
-  transition: opacity 0.25s ease;
-}
-
-.sheet-enter-active .sheet,
-.sheet-leave-active .sheet {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.sheet-enter-from,
-.sheet-leave-to {
-  opacity: 0;
-}
-
-.sheet-enter-from .sheet,
-.sheet-leave-to .sheet {
-  transform: translateY(100%);
-}
-
-/* Tablet/desktop: centered modal that scales in */
+/* Tablet/desktop: centered modal */
 @media (min-width: 640px) {
   .overlay {
     align-items: center;
@@ -176,9 +216,8 @@ h2 {
     padding-top: 16px;
   }
 
-  .sheet-enter-from .sheet,
-  .sheet-leave-to .sheet {
-    transform: translateY(16px) scale(0.97);
+  .grab {
+    touch-action: auto;
   }
 }
 </style>

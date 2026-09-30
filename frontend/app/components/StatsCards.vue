@@ -5,6 +5,14 @@ const props = defineProps({
   stats: { type: Object, default: null },
 });
 
+// Numbers count up like a scoreboard when they load or change.
+const counts = {
+  total: useCountUp(() => props.stats?.total),
+  favorites: useCountUp(() => props.stats?.favorites),
+  completed: useCountUp(() => props.stats?.completed),
+  playing: useCountUp(() => props.stats?.playing),
+};
+
 const cards = computed(() => [
   { key: 'total', label: 'Total Games', icon: Library, color: 'var(--accent-soft)' },
   { key: 'favorites', label: 'Favorites', icon: Heart, color: 'var(--red)' },
@@ -15,16 +23,26 @@ const cards = computed(() => [
 
 <template>
   <section class="stats" aria-label="Collection stats">
-    <article v-for="card in cards" :key="card.key" class="card stat" :style="{ '--c': card.color }">
+    <Motion
+      v-for="(card, i) in cards"
+      :key="card.key"
+      as="article"
+      class="card stat"
+      :style="{ '--c': card.color }"
+      :initial="{ opacity: 0, y: 14 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ type: 'spring', stiffness: 260, damping: 24, delay: i * 0.06 }"
+      :while-hover="{ y: -3 }"
+    >
       <div class="stat-icon">
         <component :is="card.icon" :size="22" :stroke-width="2.25" />
       </div>
       <div class="stat-body">
         <span v-if="card.value === undefined" class="skeleton stat-skeleton" aria-hidden="true" />
-        <span v-else class="stat-value">{{ card.value }}</span>
+        <span v-else class="stat-value">{{ counts[card.key].value }}</span>
         <span class="stat-label">{{ card.label }}</span>
       </div>
-    </article>
+    </Motion>
   </section>
 </template>
 

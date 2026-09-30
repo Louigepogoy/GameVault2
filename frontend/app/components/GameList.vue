@@ -5,7 +5,11 @@ defineProps({
   // True when no search/filter is active, so an empty list means an empty vault.
   unfiltered: { type: Boolean, default: false },
 });
-defineEmits(['toggle-favorite', 'edit', 'delete', 'add']);
+defineEmits(['toggle-favorite', 'edit', 'delete', 'add', 'clear-filters']);
+
+// Stagger the cards only on first load; later changes (sort, filter) just glide into place.
+const firstLoad = ref(true);
+onMounted(() => setTimeout(() => (firstLoad.value = false), 800));
 </script>
 
 <template>
@@ -36,18 +40,31 @@ defineEmits(['toggle-favorite', 'edit', 'delete', 'add']);
       </div>
     </EmptyState>
 
-    <EmptyState v-else-if="!games.length" />
+    <EmptyState v-else-if="!games.length" title="No games match." message="Try a different search or filter.">
+      <button type="button" class="btn btn-ghost" @click="$emit('clear-filters')">Clear filters</button>
+    </EmptyState>
 
-    <TransitionGroup v-else tag="div" name="list" class="grid" :class="{ refreshing: loading }">
-      <GameCard
-        v-for="game in games"
-        :key="game.id"
-        :game="game"
-        @toggle-favorite="$emit('toggle-favorite', $event)"
-        @edit="$emit('edit', $event)"
-        @delete="$emit('delete', $event)"
-      />
-    </TransitionGroup>
+    <div v-else class="grid" :class="{ refreshing: loading }">
+      <AnimatePresence mode="popLayout">
+        <Motion
+          v-for="(game, i) in games"
+          :key="game.id"
+          layout
+          class="grid-item"
+          :initial="{ opacity: 0, y: 18, scale: 0.98 }"
+          :animate="{ opacity: 1, y: 0, scale: 1 }"
+          :exit="{ opacity: 0, scale: 0.92, transition: { duration: 0.2 } }"
+          :transition="{ type: 'spring', stiffness: 320, damping: 30, delay: firstLoad ? Math.min(i, 8) * 0.05 : 0 }"
+        >
+          <GameCard
+            :game="game"
+            @toggle-favorite="$emit('toggle-favorite', $event)"
+            @edit="$emit('edit', $event)"
+            @delete="$emit('delete', $event)"
+          />
+        </Motion>
+      </AnimatePresence>
+    </div>
   </section>
 </template>
 
@@ -114,23 +131,12 @@ defineEmits(['toggle-favorite', 'edit', 'delete', 'add']);
   border-radius: 12px;
 }
 
-.list-enter-active,
-.list-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+.grid-item {
+  display: flex;
+  min-width: 0;
 }
 
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: scale(0.96);
-}
-
-.list-leave-active {
-  position: absolute;
-  visibility: hidden;
-}
-
-.list-move {
-  transition: transform 0.3s ease;
+.grid-item > * {
+  flex: 1;
 }
 </style>

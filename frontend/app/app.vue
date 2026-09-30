@@ -16,9 +16,11 @@ useHead({
     <span class="blob blob-green" />
   </div>
 
-  <NuxtPage />
-
-  <ToastContainer />
+  <!-- reduced-motion="user": follow the device's "reduce motion" setting. -->
+  <MotionConfig reduced-motion="user">
+    <NuxtPage />
+    <ToastContainer />
+  </MotionConfig>
 </template>
 
 <style scoped>

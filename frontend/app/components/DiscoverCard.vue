@@ -22,7 +22,15 @@ const initials = computed(() =>
 </script>
 
 <template>
-  <article class="card d-card">
+  <Motion
+    as="article"
+    class="card d-card"
+    :initial="{ opacity: 0, y: 24 }"
+    :while-in-view="{ opacity: 1, y: 0 }"
+    :in-view-options="{ once: true, margin: '0px 0px -40px 0px' }"
+    :while-hover="{ y: -4 }"
+    :transition="{ type: 'spring', stiffness: 260, damping: 26 }"
+  >
     <button type="button" class="art" :aria-label="`About ${game.title}`" @click="emit('open', game)">
       <img
         v-if="game.image_url && !imageFailed"
@@ -67,7 +75,7 @@ const initials = computed(() =>
         </span>
       </div>
     </div>
-  </article>
+  </Motion>
 </template>
 
 <style scoped>
@@ -76,13 +84,12 @@ const initials = computed(() =>
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 @media (hover: hover) {
   .d-card:hover {
     border-color: var(--border-strong);
-    transform: translateY(-2px);
   }
 }
 

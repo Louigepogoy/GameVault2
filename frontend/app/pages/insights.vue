@@ -13,6 +13,7 @@ watch(error, (err) => err && toast.error(err.message));
 onMounted(() => error.value && toast.error(error.value.message));
 
 const loading = computed(() => status.value === 'pending' && !stats.value);
+const shownHours = useCountUp(() => stats.value?.hours, { duration: 1.2, decimals: 1 });
 
 // Stack order and colors were checked for colorblind safety in both themes (see main.css).
 const STATUS_ORDER = ['backlog', 'dropped', 'playing', 'completed'];
@@ -126,7 +127,7 @@ const tooltipLeft = computed(() => {
           <div>
             <p id="hero-label" class="hero-label">Total time played</p>
             <p class="hero-value">
-              {{ stats.hours.toLocaleString('en-US', { maximumFractionDigits: 1 }) }}
+              {{ shownHours.toLocaleString('en-US', { maximumFractionDigits: 1 }) }}
               <span class="hero-unit">hours</span>
             </p>
             <p class="hero-sub">
@@ -140,12 +141,21 @@ const tooltipLeft = computed(() => {
 
         <!-- Stat tiles -->
         <section class="tiles" aria-label="Summary">
-          <article v-for="t in tiles" :key="t.key" class="card tile" :style="{ '--c': t.color }">
+          <Motion
+            v-for="(t, i) in tiles"
+            :key="t.key"
+            as="article"
+            class="card tile"
+            :style="{ '--c': t.color }"
+            :initial="{ opacity: 0, y: 14 }"
+            :animate="{ opacity: 1, y: 0 }"
+            :transition="{ type: 'spring', stiffness: 260, damping: 24, delay: 0.1 + i * 0.07 }"
+          >
             <div class="tile-icon"><component :is="t.icon" :size="20" /></div>
             <p class="tile-label">{{ t.label }}</p>
             <p class="tile-value">{{ t.value }}</p>
             <p class="tile-sub">{{ t.sub }}</p>
-          </article>
+          </Motion>
         </section>
 
         <!-- Status mix: part-to-whole stacked bar -->

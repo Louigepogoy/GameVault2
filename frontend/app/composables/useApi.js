@@ -41,5 +41,14 @@ export function useApi() {
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),
     deleteGame: (id) => request(`/games/${id}`, { method: 'DELETE' }),
+    // For when the tab is closing: keepalive lets the request finish after the page is gone.
+    deleteGameOnExit(id) {
+      if (!token.value) return;
+      fetch(`${baseURL}/games/${id}`, {
+        method: 'DELETE',
+        keepalive: true,
+        headers: { Authorization: `Bearer ${token.value}` },
+      }).catch(() => {});
+    },
   };
 }

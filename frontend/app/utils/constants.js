@@ -56,3 +56,24 @@ export function formatHours(hours) {
   const n = Number(hours) || 0;
   return `${n.toLocaleString('en-US', { maximumFractionDigits: 1 })}h`;
 }
+
+const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+const UNITS = [
+  ['year', 365 * 24 * 3600],
+  ['month', 30 * 24 * 3600],
+  ['week', 7 * 24 * 3600],
+  ['day', 24 * 3600],
+  ['hour', 3600],
+  ['minute', 60],
+];
+
+/** "just now", "5 minutes ago", "yesterday", "3 weeks ago" */
+export function timeAgo(date) {
+  const seconds = (new Date(date).getTime() - Date.now()) / 1000;
+  if (!Number.isFinite(seconds)) return '';
+  if (Math.abs(seconds) < 60) return 'just now';
+  for (const [unit, size] of UNITS) {
+    if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit);
+  }
+  return 'just now';
+}

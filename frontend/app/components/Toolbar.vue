@@ -20,6 +20,7 @@ const emit = defineEmits(['add']);
         type="search"
         class="field search-input"
         placeholder="Search games..."
+        aria-keyshortcuts="/"
         autocomplete="off"
         enterkeyhint="search"
       />
@@ -59,7 +60,7 @@ const emit = defineEmits(['add']);
       </button>
     </div>
 
-    <button type="button" class="btn btn-primary add-btn" @click="emit('add')">
+    <button type="button" class="btn btn-primary add-btn" title="Add game (N)" aria-keyshortcuts="N" @click="emit('add')">
       <Plus :size="20" :stroke-width="2.5" />
       Add Game
     </button>

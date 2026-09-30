@@ -1,11 +1,22 @@
 <script setup>
 import { Clock, Gamepad2, Heart, Pencil, Star, Trash2 } from 'lucide-vue-next';
-import { STATUS_LABELS, formatHours } from '~/utils/constants';
+import { STATUS_LABELS, formatHours, timeAgo } from '~/utils/constants';
 
 const props = defineProps({
   game: { type: Object, required: true },
 });
 const emit = defineEmits(['toggle-favorite', 'edit', 'delete']);
+
+// "Added 3 days ago". Set after mount so server and browser clocks can't disagree.
+const added = ref('');
+onMounted(() => (added.value = props.game.created_at ? `Added ${timeAgo(props.game.created_at)}` : ''));
+
+// The heart pops only when you tap it, not when the page loads.
+const popped = ref(false);
+function toggleFavorite() {
+  popped.value = true;
+  emit('toggle-favorite', props.game);
+}
 
 // Fall back to the placeholder if the cover URL fails to load.
 const coverFailed = ref(false);
@@ -76,9 +87,18 @@ onMounted(() => {
           :class="{ active: game.favorite }"
           :aria-pressed="game.favorite"
           :aria-label="game.favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`"
-          @click="emit('toggle-favorite', game)"
+          @click="toggleFavorite"
         >
-          <Heart :size="19" :fill="game.favorite ? 'currentColor' : 'none'" />
+          <Motion
+            :key="String(game.favorite)"
+            as="span"
+            class="heart"
+            :initial="popped ? { scale: game.favorite ? 0.3 : 0.8 } : false"
+            :animate="{ scale: 1 }"
+            :transition="{ type: 'spring', stiffness: 600, damping: game.favorite ? 10 : 25 }"
+          >
+            <Heart :size="19" :fill="game.favorite ? 'currentColor' : 'none'" />
+          </Motion>
         </button>
         <button type="button" class="icon-btn" :aria-label="`Edit ${game.title}`" @click="emit('edit', game)">
           <Pencil :size="18" />
@@ -91,6 +111,7 @@ onMounted(() => {
         >
           <Trash2 :size="18" />
         </button>
+        <span v-if="added" class="added">{{ added }}</span>
       </div>
     </div>
   </article>
@@ -218,9 +239,24 @@ onMounted(() => {
 
 .actions {
   display: flex;
+  flex-wrap: wrap; /* "Added ..." drops to its own line on narrow cards */
   gap: 8px;
   margin-top: auto;
   padding-top: 4px;
+}
+
+.heart {
+  display: grid;
+  place-items: center;
+}
+
+.added {
+  margin-left: auto;
+  align-self: flex-end;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .fav-btn.active {

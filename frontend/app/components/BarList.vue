@@ -12,10 +12,17 @@ const width = (value) => (max.value ? `${Math.max((value / max.value) * 100, 2)}
 
 <template>
   <ul v-if="items.length" class="bars">
-    <li v-for="item in items" :key="item.key ?? item.label" class="bar-row" :title="`${item.label}: ${item.display ?? item.value}`">
+    <li v-for="(item, i) in items" :key="item.key ?? item.label" class="bar-row" :title="`${item.label}: ${item.display ?? item.value}`">
       <span class="bar-label">{{ item.label }}</span>
       <span class="bar-track" aria-hidden="true">
-        <span class="bar" :style="{ width: width(item.value) }" />
+        <Motion
+          as="span"
+          class="bar"
+          :initial="{ width: '0%' }"
+          :while-in-view="{ width: width(item.value) }"
+          :in-view-options="{ once: true }"
+          :transition="{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: i * 0.06 }"
+        />
       </span>
       <span class="bar-value">{{ item.display ?? item.value }}</span>
     </li>
@@ -66,7 +73,6 @@ const width = (value) => (max.value ? `${Math.max((value / max.value) * 100, 2)}
   height: 100%;
   border-radius: 0 4px 4px 0;
   background: var(--chart-bar);
-  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .bar-value {

@@ -293,6 +293,22 @@ select.field option {
   }
 }
 
+/* ---------- Page transitions ---------- */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
 /* ---------- Auth forms (login, register, password reset) ---------- */
 .auth-form {
   display: flex;

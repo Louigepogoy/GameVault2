@@ -5,13 +5,14 @@ const props = defineProps({
 });
 
 const percent = computed(() => (props.total ? Math.round((props.completed / props.total) * 100) : 0));
+const shownPercent = useCountUp(percent);
 </script>
 
 <template>
   <section class="card progress">
     <div class="progress-head">
       <h2 id="progress-title">Collection Progress</h2>
-      <span class="progress-percent">{{ percent }}%</span>
+      <span class="progress-percent">{{ shownPercent }}%</span>
     </div>
     <div
       class="track"
@@ -21,7 +22,12 @@ const percent = computed(() => (props.total ? Math.round((props.completed / prop
       aria-valuemin="0"
       aria-valuemax="100"
     >
-      <div class="fill" :style="{ width: `${percent}%` }" />
+      <Motion
+        class="fill"
+        :initial="{ width: '0%' }"
+        :animate="{ width: `${percent}%` }"
+        :transition="{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }"
+      />
     </div>
     <p class="progress-caption">{{ completed }} of {{ total }} games completed</p>
   </section>
@@ -66,7 +72,6 @@ h2 {
   border-radius: inherit;
   background: linear-gradient(90deg, #6d28d9, #8b5cf6, #c084fc);
   box-shadow: 0 0 14px rgba(139, 92, 246, 0.7);
-  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .progress-caption {

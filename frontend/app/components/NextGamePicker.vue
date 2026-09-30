@@ -111,7 +111,14 @@ onBeforeUnmount(() => clearInterval(timer));
 
     <template v-else>
       <div class="pick" :class="{ rolling }" :aria-live="rolling ? 'off' : 'polite'">
-        <div class="pick-cover">
+        <!-- Re-keyed when the shuffle lands, so the final pick pops in. -->
+        <Motion
+          :key="rolling ? 'rolling' : current.id"
+          class="pick-cover"
+          :initial="rolling ? false : { scale: 0.85, rotate: -4 }"
+          :animate="{ scale: 1, rotate: 0 }"
+          :transition="{ type: 'spring', stiffness: 420, damping: 14 }"
+        >
           <img
             v-if="current.cover_url && !coverFailed"
             :src="current.cover_url"
@@ -122,7 +129,7 @@ onBeforeUnmount(() => clearInterval(timer));
           <div v-else class="cover-placeholder" aria-hidden="true">
             <Gamepad2 :size="40" />
           </div>
-        </div>
+        </Motion>
         <p class="pick-title">{{ current.title }}</p>
         <p class="muted">
           {{ [current.platform, current.genre].filter(Boolean).join(' • ') || 'From your backlog' }}
@@ -190,7 +197,6 @@ onBeforeUnmount(() => clearInterval(timer));
 }
 
 .rolling .pick-cover {
-  transform: scale(0.94) rotate(-2deg);
   filter: blur(1.5px);
 }
 

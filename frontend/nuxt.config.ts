@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: !process.env.CAPACITOR,
 
   devtools: { enabled: false },
-  modules: ['@vite-pwa/nuxt', 'nuxt-quasar-ui'],
+  modules: ['@vite-pwa/nuxt', 'nuxt-quasar-ui', 'motion-v/nuxt'],
   css: ['~/assets/css/main.css'],
 
   // Quasar components (QBtn, QDialog, ...) are auto-imported. Its global styles are
@@ -25,6 +25,8 @@ export default defineNuxtConfig({
   },
 
   app: {
+    // Soft fade/slide between pages (styles in main.css).
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'GameVault',
       meta: [
