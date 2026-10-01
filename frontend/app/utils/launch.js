@@ -59,10 +59,13 @@ function usable(url, device) {
   return device === 'desktop' ? url : null;
 }
 
-/** From { steam, android, web } options, the one for this device. */
+// Launch options from the server: { pc, android, web }. (`steam` was the old name for pc.)
+const pcOf = (o) => o.pc || o.steam || null;
+
+/** From the launch options, the one for this device. */
 const fromOptions = (o, device) => {
   if (!o) return null;
-  if (device === 'desktop') return o.steam || o.web || null;
+  if (device === 'desktop') return pcOf(o) || o.web || null;
   if (device === 'android') return o.android || o.web || null;
   return o.web || null;
 };
@@ -81,13 +84,13 @@ export function launchLinkFor(game, device = deviceKind()) {
 }
 
 /**
- * From { steam, android, web } launch options, the one to save for the chosen platform.
+ * From the { pc, android, web } launch options, the one to save for the chosen platform.
  * A PC game never gets an Android-only link (it couldn't open there), and vice versa.
  */
 export function pickLaunch(launch, platform) {
   if (!launch) return null;
   const mobile = /android|ios|iphone|mobile/i.test(platform ?? '');
-  return (mobile ? launch.android : launch.steam) || launch.web || null;
+  return (mobile ? launch.android : pcOf(launch)) || launch.web || null;
 }
 
 /** Follow a launch link. Web links open in a new tab; launcher links hand off to the app. */

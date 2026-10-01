@@ -43,7 +43,7 @@ describe('suggested links for games saved without one', () => {
   const roblox = {
     title: 'Roblox',
     launch_url: null,
-    suggested_launch: { steam: null, android: ANDROID, web: ROBLOX_WEB },
+    suggested_launch: { pc: null, android: ANDROID, web: ROBLOX_WEB },
   };
 
   it('opens Roblox on the web on a computer or iPhone, and the app on Android', () => {
@@ -62,7 +62,7 @@ describe('suggested links for games saved without one', () => {
 });
 
 describe('pickLaunch', () => {
-  const both = { steam: STEAM, android: ANDROID };
+  const both = { pc: STEAM, android: ANDROID };
   it('picks the Android app for phone platforms and Steam otherwise', () => {
     expect(pickLaunch(both, 'Android')).toBe(ANDROID);
     expect(pickLaunch(both, 'PC')).toBe(STEAM);
@@ -70,13 +70,32 @@ describe('pickLaunch', () => {
   });
 
   it('uses the web link when there is no app/launcher link for that platform', () => {
-    expect(pickLaunch({ steam: null, android: ANDROID, web: ROBLOX_WEB }, 'PC')).toBe(ROBLOX_WEB);
-    expect(pickLaunch({ steam: STEAM, android: null, web: null }, 'Android')).toBeNull();
+    expect(pickLaunch({ pc: null, android: ANDROID, web: ROBLOX_WEB }, 'PC')).toBe(ROBLOX_WEB);
+    expect(pickLaunch({ pc: STEAM, android: null, web: null }, 'Android')).toBeNull();
     expect(pickLaunch(null, 'PC')).toBeNull();
   });
 
   it('never gives a PC game an Android-only link', () => {
-    expect(pickLaunch({ steam: null, android: ANDROID, web: null }, 'PC')).toBeNull();
+    expect(pickLaunch({ pc: null, android: ANDROID, web: null }, 'PC')).toBeNull();
+  });
+});
+
+describe('Epic and other PC launchers', () => {
+  const fortnite = {
+    title: 'Fortnite',
+    suggested_launch: {
+      pc: 'com.epicgames.launcher://apps/Fortnite?action=launch&silent=true',
+      android: null,
+      web: null,
+    },
+  };
+  it('launches Fortnite through Epic on a computer', () => {
+    expect(launchLinkFor(fortnite, 'desktop')).toMatch(/^com.epicgames.launcher:/);
+    expect(launchLinkFor(fortnite, 'android')).toBeNull();
+  });
+
+  it('still understands the old "steam" key', () => {
+    expect(pickLaunch({ steam: STEAM, android: null, web: null }, 'PC')).toBe(STEAM);
   });
 });
 

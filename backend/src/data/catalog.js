@@ -239,6 +239,8 @@ export const CATALOG = [
   },
   {
     slug: 'fortnite',
+    // Epic Games Launcher protocol activation: starts Fortnite without opening the launcher window.
+    pcLaunch: 'com.epicgames.launcher://apps/Fortnite?action=launch&silent=true',
     image:
       'https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/bd/a7/e3/bda7e31a-7341-2cf8-d54f-880aec955620/EN_FNBR_42-00_C7S4_Shot_1_iOS_AppStore_Screenshot_iPhone_2868x1320.jpg/920x0w.jpg',
     cover:
@@ -377,6 +379,8 @@ export const CATALOG = [
   },
   {
     slug: 'minecraft',
+    // Opens Minecraft for Windows (Bedrock).
+    pcLaunch: 'minecraft://',
     image:
       'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/07/47/6f/07476fcd-1ecf-18ca-e7f7-364d6c6cd5e1/pr_source.png/920x0w.jpg',
     cover:

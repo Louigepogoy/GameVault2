@@ -19,12 +19,15 @@ export function androidLaunchUrl(pkg) {
 /** Package name from a Google Play link, or null. */
 export const playPackage = (url) => /[?&]id=([A-Za-z0-9._]+)/.exec(url ?? '')?.[1] ?? null;
 
-/** { steam, android, web } launch links for a catalog game (any may be null). */
+/**
+ * { pc, android, web } launch links for a catalog game (any may be null).
+ * pc: Steam, or the game's own launcher link (e.g. Epic for Fortnite).
+ */
 export function catalogLaunch(item) {
   const play = item.links?.find((l) => l.label === 'Google Play');
   const pkg = play ? playPackage(play.url) : null;
   return {
-    steam: item.steamId ? steamLaunchUrl(item.steamId) : null,
+    pc: item.steamId ? steamLaunchUrl(item.steamId) : (item.pcLaunch ?? null),
     android: pkg ? androidLaunchUrl(pkg) : null,
     web: item.webLaunch ?? null,
   };
@@ -45,5 +48,5 @@ export function suggestedLaunch(title) {
   const item = byTitle.get(norm(title));
   if (!item) return null;
   const launch = catalogLaunch(item);
-  return launch.steam || launch.android || launch.web ? launch : null;
+  return launch.pc || launch.android || launch.web ? launch : null;
 }

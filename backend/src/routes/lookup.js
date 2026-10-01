@@ -89,7 +89,7 @@ async function searchSteam(q) {
           platform: 'PC',
           year,
           source: 'Steam',
-          launch: { steam: steamLaunchUrl(item.id), android: null },
+          launch: { pc: steamLaunchUrl(item.id), android: null, web: null },
         };
       } catch {
         return null;
@@ -119,7 +119,7 @@ async function searchAppStore(q) {
       platform: null, // usually on both Android and iOS; let the user choose
       year: Number(r.releaseDate?.slice(0, 4)) || null,
       source: 'App Store',
-      launch: { steam: null, android: null },
+      launch: { pc: null, android: null, web: null },
     }));
 }
 

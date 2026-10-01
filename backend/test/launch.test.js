@@ -79,11 +79,14 @@ describe('launch links from the catalog', () => {
   it('gives Discover games Steam and/or Android launch links', async () => {
     const games = (await api().get('/api/discover').set(u.auth)).body.games;
     const bySlug = Object.fromEntries(games.map((g) => [g.slug, g.launch]));
-    expect(bySlug.hades).toEqual({ steam: 'steam://rungameid/1145360', android: null, web: null });
+    expect(bySlug.hades).toEqual({ pc: 'steam://rungameid/1145360', android: null, web: null });
     expect(bySlug.roblox.web).toBe('https://www.roblox.com/home');
-    expect(bySlug['mobile-legends'].steam).toBeNull();
+    expect(bySlug['mobile-legends'].pc).toBeNull();
     expect(bySlug['mobile-legends'].android).toContain('package=com.mobile.legends');
-    expect(bySlug['stardew-valley'].steam).toBe('steam://rungameid/413150');
+    expect(bySlug['stardew-valley'].pc).toBe('steam://rungameid/413150');
+    expect(bySlug.fortnite.pc).toBe('com.epicgames.launcher://apps/Fortnite?action=launch&silent=true');
+    expect(bySlug.minecraft.pc).toBe('minecraft://');
+    expect(bySlug.valorant.pc).toBeNull(); // Riot has no web launch link
     expect(bySlug['stardew-valley'].android).toContain('package=com.chucklefish.stardewvalley');
     expect(games.some((g) => 'steamId' in g)).toBe(false);
   });
