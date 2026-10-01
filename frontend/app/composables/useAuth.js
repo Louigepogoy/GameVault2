@@ -14,6 +14,11 @@ export function useAuth() {
   const token = useState('auth-token', () => tokenCookie.value || null);
   const user = useState('auth-user', () => (token.value && userCookie.value) || null);
 
+  /** Replace the stored user (e.g. after saving preferences), keeping the session. */
+  function updateUser(next) {
+    user.value = userCookie.value = next;
+  }
+
   function setSession(session) {
     token.value = tokenCookie.value = session.token;
     user.value = userCookie.value = session.user;
@@ -37,6 +42,7 @@ export function useAuth() {
     user,
     loggedIn: computed(() => !!token.value && !!user.value),
     setSession,
+    updateUser,
     clearSession,
     logout,
   };

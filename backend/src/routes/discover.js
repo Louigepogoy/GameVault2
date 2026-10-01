@@ -18,7 +18,10 @@ const norm = (s) => (s || '').trim().toLowerCase();
 // recommendations based on the genres the user plays and rates highly.
 router.get('/', async (req, res, next) => {
   try {
-    const games = await sql`SELECT title, genre, rating, favorite FROM games WHERE user_id = ${req.userId}`;
+    const [games, [prefs]] = await Promise.all([
+      sql`SELECT title, genre, rating, favorite FROM games WHERE user_id = ${req.userId}`,
+      sql`SELECT favorite_genres FROM users WHERE id = ${req.userId}`,
+    ]);
 
     const owned = new Set(games.map((g) => norm(g.title)));
 
@@ -29,6 +32,10 @@ router.get('/', async (req, res, next) => {
       if (!genre) continue;
       const weight = 1 + (g.favorite ? 1 : 0) + (g.rating >= 4 ? 1 : 0);
       genreWeight.set(genre, (genreWeight.get(genre) || 0) + weight);
+    }
+    // Genres picked during onboarding count too, so new users get suggestions right away.
+    for (const g of prefs?.favorite_genres ?? []) {
+      genreWeight.set(norm(g), (genreWeight.get(norm(g)) || 0) + 2);
     }
 
     const items = CATALOG.map((item) => {

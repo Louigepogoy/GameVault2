@@ -20,7 +20,7 @@ const loading = computed(() => status.value === 'pending' && !stats.value);
 const shownHours = useCountUp(() => stats.value?.hours, { duration: 1.2, decimals: 1 });
 
 // Stack order and colors were checked for colorblind safety in both themes (see main.css).
-const STATUS_ORDER = ['backlog', 'dropped', 'playing', 'completed'];
+const STATUS_ORDER = ['backlog', 'dropped', 'playing', 'completed', 'wishlist'];
 
 const statusParts = computed(() => {
   const counts = Object.fromEntries((stats.value?.by_status ?? []).map((s) => [s.label, s.count]));

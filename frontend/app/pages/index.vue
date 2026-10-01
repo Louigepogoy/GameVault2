@@ -1,5 +1,5 @@
 <script setup>
-import { BarChart3, ChevronRight, Compass, Dices, LogOut, Trophy } from 'lucide-vue-next';
+import { BarChart3, ChevronRight, Compass, Dices, LogOut, Settings, Trophy } from 'lucide-vue-next';
 import { SORT_VALUES } from '~/utils/constants';
 
 const api = useApi();
@@ -340,6 +340,9 @@ async function toggleFavorite(game) {
         <div class="header-actions">
           <span v-if="user" class="user-name">{{ user.name }}</span>
           <ThemeToggle />
+          <NuxtLink to="/settings" class="icon-btn" aria-label="Settings" title="Settings">
+            <Settings :size="20" />
+          </NuxtLink>
           <button type="button" class="icon-btn" aria-label="Log out" title="Log out" @click="logout">
             <LogOut :size="20" />
           </button>

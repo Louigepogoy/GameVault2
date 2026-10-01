@@ -1,4 +1,44 @@
-export const STATUSES = ['backlog', 'playing', 'completed', 'dropped'];
+export const STATUSES = ['backlog', 'playing', 'completed', 'dropped', 'wishlist'];
+
+// Platform groups people pick during onboarding (not the exact consoles on a game).
+export const PLATFORM_PREFS = ['PC', 'PlayStation', 'Xbox', 'Switch', 'Mobile'];
+
+const stringList = (value, field, { allowed, max = 20, maxLength = 40 } = {}) => {
+  if (!Array.isArray(value)) throw new HttpError(400, `${field} must be a list`);
+  if (value.length > max) throw new HttpError(400, `${field} can have at most ${max} items`);
+  const out = [];
+  for (const item of value) {
+    if (typeof item !== 'string' || !item.trim() || item.trim().length > maxLength) {
+      throw new HttpError(400, `${field} must be short text values`);
+    }
+    const v = item.trim();
+    if (allowed && !allowed.includes(v)) throw new HttpError(400, `${field}: unknown value "${v}"`);
+    if (!out.some((x) => x.toLowerCase() === v.toLowerCase())) out.push(v);
+  }
+  return out;
+};
+
+/** PATCH /api/me body: any of favorite_platforms, favorite_genres, onboarding_completed. */
+export function validateProfileUpdate(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw new HttpError(400, 'Request body must be a JSON object');
+  }
+  const out = {};
+  if ('favorite_platforms' in body) {
+    out.favorite_platforms = stringList(body.favorite_platforms, 'favorite_platforms', {
+      allowed: PLATFORM_PREFS,
+    });
+  }
+  if ('favorite_genres' in body) out.favorite_genres = stringList(body.favorite_genres, 'favorite_genres');
+  if ('onboarding_completed' in body) {
+    if (typeof body.onboarding_completed !== 'boolean') {
+      throw new HttpError(400, 'onboarding_completed must be true or false');
+    }
+    out.onboarding_completed = body.onboarding_completed;
+  }
+  if (!Object.keys(out).length) throw new HttpError(400, 'Nothing to update');
+  return out;
+}
 
 export class HttpError extends Error {
   constructor(status, message) {

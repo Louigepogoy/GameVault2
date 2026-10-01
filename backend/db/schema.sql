@@ -78,3 +78,16 @@ CREATE TABLE IF NOT EXISTS user_achievements (
 
 -- Link that opens the game itself (steam://rungameid/..., an Android intent, a launcher link...).
 ALTER TABLE games ADD COLUMN IF NOT EXISTS launch_url TEXT;
+
+-- Wishlist: games you want but don't have yet. Re-created so the list of statuses can grow.
+ALTER TABLE games DROP CONSTRAINT IF EXISTS games_status_check;
+ALTER TABLE games ADD CONSTRAINT games_status_check
+  CHECK (status IN ('backlog', 'playing', 'completed', 'dropped', 'wishlist'));
+
+-- Onboarding and preferences.
+-- Existing accounts count as onboarded (DEFAULT true when the column is added);
+-- accounts created afterwards start at false and see the welcome flow.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE users ALTER COLUMN onboarding_completed SET DEFAULT false;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS favorite_platforms TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS favorite_genres TEXT[] NOT NULL DEFAULT '{}';

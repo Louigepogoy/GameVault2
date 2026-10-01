@@ -16,6 +16,7 @@
   --green: #22c55e;
   --amber: #f59e0b;
   --blue: #38bdf8;
+  --fuchsia: #e879f9;
   --slate: #94a3b8;
   --glow-purple: rgba(139, 92, 246, 0.45);
   --glow-red: rgba(244, 63, 94, 0.28);
@@ -34,6 +35,7 @@
   --chart-dropped: #e11d48;
   --chart-playing: #0284c7;
   --chart-completed: #16a34a;
+  --chart-wishlist: #c026d3; /* validated with the four above, in this order */
   --chart-bar: var(--accent);
   color-scheme: dark;
 }
@@ -54,6 +56,7 @@
   --green: #16a34a;
   --amber: #d97706;
   --blue: #0284c7;
+  --fuchsia: #c026d3;
   --slate: #64748b;
   --glow-purple: rgba(139, 92, 246, 0.22);
   --glow-red: rgba(244, 63, 94, 0.14);
@@ -289,6 +292,9 @@ select.field option {
 }
 .badge-dropped {
   color: var(--red);
+}
+.badge-wishlist {
+  color: var(--fuchsia);
 }
 
 /* Skeleton shimmer */

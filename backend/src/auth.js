@@ -11,7 +11,15 @@ const TOKEN_TTL = '7d';
 export const signToken = (user) => jwt.sign({ sub: String(user.id) }, secret, { expiresIn: TOKEN_TTL });
 
 /** Public shape of a user row; never send password_hash to the client. */
-export const publicUser = ({ id, name, email, created_at }) => ({ id, name, email, created_at });
+export const publicUser = ({
+  id,
+  name,
+  email,
+  created_at,
+  onboarding_completed = false,
+  favorite_platforms = [],
+  favorite_genres = [],
+}) => ({ id, name, email, created_at, onboarding_completed, favorite_platforms, favorite_genres });
 
 /** Requires `Authorization: Bearer <token>` and sets req.userId. */
 export function requireAuth(req, _res, next) {

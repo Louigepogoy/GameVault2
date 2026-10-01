@@ -9,6 +9,7 @@ import discoverRouter from './routes/discover.js';
 import lookupRouter from './routes/lookup.js';
 import sessionsRouter from './routes/sessions.js';
 import achievementsRouter from './routes/achievements.js';
+import meRouter from './routes/me.js';
 import { requireAuth } from './auth.js';
 import { HttpError } from './validate.js';
 
@@ -31,6 +32,7 @@ app.use('/api/discover', requireAuth, discoverRouter);
 app.use('/api/lookup', requireAuth, lookupRouter);
 app.use('/api/sessions', requireAuth, sessionsRouter);
 app.use('/api/achievements', requireAuth, achievementsRouter);
+app.use('/api/me', requireAuth, meRouter);
 
 app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 

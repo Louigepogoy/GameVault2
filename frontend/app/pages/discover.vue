@@ -27,7 +27,16 @@ const MOBILE = ['Android', 'iOS'];
 const isConsole = (p) => /PlayStation|Xbox|Nintendo/.test(p);
 
 const search = ref('');
-const filter = ref('');
+// Start on the filter that matches the platforms picked in onboarding/settings.
+const { user } = useAuth();
+function defaultFilter(prefs = []) {
+  if (!prefs.length) return '';
+  if (prefs.every((p) => p === 'Mobile')) return 'mobile';
+  if (prefs.every((p) => p === 'PC')) return 'pc';
+  if (prefs.every((p) => ['PlayStation', 'Xbox', 'Switch'].includes(p))) return 'console';
+  return '';
+}
+const filter = ref(defaultFilter(user.value?.favorite_platforms));
 const genre = ref('');
 
 const genres = computed(() => [...new Set(data.value.games.map((g) => g.genre))].sort());

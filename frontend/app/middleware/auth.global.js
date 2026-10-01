@@ -2,7 +2,7 @@
 const PUBLIC_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
 
 export default defineNuxtRouteMiddleware((to) => {
-  const { loggedIn } = useAuth();
+  const { loggedIn, user } = useAuth();
   const isPublic = PUBLIC_PAGES.includes(to.path);
 
   if (!loggedIn.value && !isPublic) {
@@ -11,5 +11,9 @@ export default defineNuxtRouteMiddleware((to) => {
   // Already logged in: skip the login/register screens. Reset links still work.
   if (loggedIn.value && isPublic && to.path !== '/reset-password') {
     return navigateTo('/');
+  }
+  // New accounts get the welcome flow first. (Older saved sessions without the flag skip it.)
+  if (loggedIn.value && user.value?.onboarding_completed === false && to.path !== '/welcome') {
+    return navigateTo('/welcome');
   }
 });

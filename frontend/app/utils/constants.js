@@ -3,6 +3,7 @@ export const STATUSES = [
   { value: 'playing', label: 'Playing' },
   { value: 'completed', label: 'Completed' },
   { value: 'dropped', label: 'Dropped' },
+  { value: 'wishlist', label: 'Wishlist' },
 ];
 
 export const STATUS_LABELS = Object.fromEntries(STATUSES.map((s) => [s.value, s.label]));
@@ -95,3 +96,17 @@ export function formatClock(totalSeconds) {
   const sec = String(s % 60).padStart(2, '0');
   return h ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`;
 }
+
+// Platform groups people pick in onboarding/settings, and the console name used
+// when adding a game for that group.
+export const PLATFORM_PREFS = [
+  { value: 'PC', label: 'PC', platform: 'PC' },
+  { value: 'PlayStation', label: 'PlayStation', platform: 'PlayStation 5' },
+  { value: 'Xbox', label: 'Xbox', platform: 'Xbox Series X|S' },
+  { value: 'Switch', label: 'Switch', platform: 'Nintendo Switch' },
+  { value: 'Mobile', label: 'Mobile', platform: 'Android' },
+];
+
+/** A platform to save on a new game, from the user's first favorite platform group. */
+export const defaultPlatform = (prefs = []) =>
+  PLATFORM_PREFS.find((p) => p.value === prefs[0])?.platform ?? null;

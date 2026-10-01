@@ -70,6 +70,7 @@ export function useApi() {
     getHeatmap: ({ weeks = 15, tz } = {}) =>
       request('/stats/heatmap', { query: { weeks, ...(tz && { tz }) } }),
     getAchievements: () => request('/achievements'),
+    updateMe: (body) => request('/me', { method: 'PATCH', body }),
     createGame: (game) => request('/games', { method: 'POST', body: game }),
     updateGame: (id, patch) => request(`/games/${id}`, { method: 'PATCH', body: patch }),
     deleteGame: (id) => request(`/games/${id}`, { method: 'DELETE' }),
