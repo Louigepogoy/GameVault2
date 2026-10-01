@@ -65,11 +65,15 @@ export function useSession() {
    * Open the game itself (Steam, another launcher, or the Android app) if it has a link
    * for this device. Returns true if there was something to open.
    */
-  function openGame(game, { timerStarted = false } = {}) {
+  /** Open the game's launch link for this device. Returns its launcher, or null if none. */
+  function launchNow(game) {
     const link = launchLinkFor(game);
-    if (!link) return false;
-    const { name, help } = launcherFor(link);
+    if (!link) return null;
     openLaunchLink(link);
+    return launcherFor(link);
+  }
+
+  function announceLaunch(game, { name, help }, { timerStarted }) {
     toast.success(
       `${timerStarted ? '▶️ Timer started. ' : ''}Opening "${game.title}"${name === 'the app' ? '' : ` in ${name}`}…`,
       {
@@ -80,11 +84,20 @@ export function useSession() {
         }),
       },
     );
-    return true;
+  }
+
+  /** Open the game without starting the timer. Returns true if there was something to open. */
+  function openGame(game) {
+    const launcher = launchNow(game);
+    if (launcher) announceLaunch(game, launcher, { timerStarted: false });
+    return !!launcher;
   }
 
   async function start(game, { launch = true } = {}) {
     if (active.value?.game_id === game.id) return active.value;
+    // Open the game first, while this still counts as part of the click: browsers block
+    // new tabs and app links opened after waiting on the network.
+    const launcher = launch ? launchNow(game) : null;
     // Switching games: save the current session first.
     if (active.value && !(await stop({ quiet: true }))) return null;
     busy.value = true;
@@ -93,8 +106,16 @@ export function useSession() {
       syncClock(now);
       active.value = session;
       version.value++; // a backlog game becomes "playing"
-      if (!(launch && openGame(game, { timerStarted: true }))) {
+      if (launcher) {
+        announceLaunch(game, launcher, { timerStarted: true });
+      } else {
         toast.success(`▶️ Timer started for "${game.title}". Have fun!`);
+        // No link for this device: say how to make the game open next time.
+        if (launch) {
+          toast.info('Tip: add a launch link (Edit game) so Start playing opens the game too.', {
+            duration: 6000,
+          });
+        }
       }
       return session;
     } catch (err) {

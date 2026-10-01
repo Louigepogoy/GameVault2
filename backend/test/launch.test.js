@@ -42,6 +42,26 @@ describe('launch_url', () => {
   });
 });
 
+describe('suggested launch links for games saved without one', () => {
+  it('matches known titles, ignoring case and punctuation', async () => {
+    const roblox = await createGame(u.auth, { title: 'roblox', platform: 'PC' });
+    const listed = (await api().get('/api/games').set(u.auth)).body.find((g) => g.id === roblox.id);
+    expect(listed.suggested_launch).toMatchObject({ web: 'https://www.roblox.com/home' });
+    expect(listed.suggested_launch.android).toContain('package=com.roblox.client');
+
+    const one = (await api().get(`/api/games/${roblox.id}`).set(u.auth)).body;
+    expect(one.suggested_launch.web).toBe('https://www.roblox.com/home');
+  });
+
+  it("doesn't suggest anything when the game has its own link or is unknown", async () => {
+    const own = await createGame(u.auth, { title: 'Roblox', launch_url: 'roblox://' });
+    const unknown = await createGame(u.auth, { title: 'My Homebrew Game' });
+    const list = (await api().get('/api/games').set(u.auth)).body;
+    expect(list.find((g) => g.id === own.id).suggested_launch).toBeUndefined();
+    expect(list.find((g) => g.id === unknown.id).suggested_launch).toBeUndefined();
+  });
+});
+
 describe('launch links from the catalog', () => {
   it('reads the package name from a Google Play link', () => {
     expect(playPackage('https://play.google.com/store/apps/details?id=com.mobile.legends')).toBe(
@@ -59,7 +79,8 @@ describe('launch links from the catalog', () => {
   it('gives Discover games Steam and/or Android launch links', async () => {
     const games = (await api().get('/api/discover').set(u.auth)).body.games;
     const bySlug = Object.fromEntries(games.map((g) => [g.slug, g.launch]));
-    expect(bySlug.hades).toEqual({ steam: 'steam://rungameid/1145360', android: null });
+    expect(bySlug.hades).toEqual({ steam: 'steam://rungameid/1145360', android: null, web: null });
+    expect(bySlug.roblox.web).toBe('https://www.roblox.com/home');
     expect(bySlug['mobile-legends'].steam).toBeNull();
     expect(bySlug['mobile-legends'].android).toContain('package=com.mobile.legends');
     expect(bySlug['stardew-valley'].steam).toBe('steam://rungameid/413150');

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { launchLinkFor, launcherFor, pickLaunch } from '~/utils/launch';
 
 const STEAM = 'steam://rungameid/1145360';
+const ROBLOX_WEB = 'https://www.roblox.com/home';
 const ANDROID =
   'intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.mobile.legends;end';
 
@@ -38,6 +39,28 @@ describe('launchLinkFor', () => {
   });
 });
 
+describe('suggested links for games saved without one', () => {
+  const roblox = {
+    title: 'Roblox',
+    launch_url: null,
+    suggested_launch: { steam: null, android: ANDROID, web: ROBLOX_WEB },
+  };
+
+  it('opens Roblox on the web on a computer or iPhone, and the app on Android', () => {
+    expect(launchLinkFor(roblox, 'desktop')).toBe(ROBLOX_WEB);
+    expect(launchLinkFor(roblox, 'ios')).toBe(ROBLOX_WEB);
+    expect(launchLinkFor(roblox, 'android')).toBe(ANDROID);
+  });
+
+  it("falls back to the suggestion when the saved link doesn't fit this device", () => {
+    expect(launchLinkFor({ ...roblox, launch_url: ANDROID }, 'desktop')).toBe(ROBLOX_WEB);
+  });
+
+  it('opens roblox:// app links on any device', () => {
+    expect(launchLinkFor({ launch_url: 'roblox://' }, 'ios')).toBe('roblox://');
+  });
+});
+
 describe('pickLaunch', () => {
   const both = { steam: STEAM, android: ANDROID };
   it('picks the Android app for phone platforms and Steam otherwise', () => {
@@ -46,10 +69,14 @@ describe('pickLaunch', () => {
     expect(pickLaunch(both, '')).toBe(STEAM);
   });
 
-  it('falls back to whatever exists', () => {
-    expect(pickLaunch({ steam: null, android: ANDROID }, 'PC')).toBe(ANDROID);
-    expect(pickLaunch({ steam: STEAM, android: null }, 'Android')).toBe(STEAM);
+  it('uses the web link when there is no app/launcher link for that platform', () => {
+    expect(pickLaunch({ steam: null, android: ANDROID, web: ROBLOX_WEB }, 'PC')).toBe(ROBLOX_WEB);
+    expect(pickLaunch({ steam: STEAM, android: null, web: null }, 'Android')).toBeNull();
     expect(pickLaunch(null, 'PC')).toBeNull();
+  });
+
+  it('never gives a PC game an Android-only link', () => {
+    expect(pickLaunch({ steam: null, android: ANDROID, web: null }, 'PC')).toBeNull();
   });
 });
 
@@ -58,5 +85,6 @@ describe('launcherFor', () => {
     expect(launcherFor(STEAM)).toEqual({ name: 'Steam', help: 'https://store.steampowered.com/about/' });
     expect(launcherFor('com.epicgames.launcher://apps/x').name).toBe('the Epic Games Launcher');
     expect(launcherFor(ANDROID).name).toBe('the app');
+    expect(launcherFor(ROBLOX_WEB).name).toBe('roblox.com');
   });
 });

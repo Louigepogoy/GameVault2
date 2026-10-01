@@ -260,6 +260,8 @@ export const CATALOG = [
   },
   {
     slug: 'roblox',
+    // Roblox has no store page on PC; the site's Play buttons open the Roblox app.
+    webLaunch: 'https://www.roblox.com/home',
     image: 'https://images.rbxcdn.com/5348266ea6c5e67b19d6a814cbbb70f6.jpg',
     cover:
       'https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/a2/5d/b7/a25db7ef-5fd9-160f-3158-5753572d2fdb/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/600x600bb.jpg',

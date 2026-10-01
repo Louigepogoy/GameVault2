@@ -2,6 +2,14 @@ import { Router } from 'express';
 import { sql } from '../db.js';
 import { HttpError, STATUSES, parseId, requestTimeZone, validateGame } from '../validate.js';
 import { evaluateAchievements } from '../achievements.js';
+import { suggestedLaunch } from '../launch.js';
+
+// Games without their own launch link get one for known titles (see src/launch.js).
+const withLaunch = (g) => {
+  if (g.launch_url) return g;
+  const suggested = suggestedLaunch(g.title);
+  return suggested ? { ...g, suggested_launch: suggested } : g;
+};
 
 const router = Router();
 
@@ -51,7 +59,7 @@ router.get(
       `SELECT * FROM games WHERE ${where.join(' AND ')} ORDER BY ${SORTS[sort]}`,
       params,
     );
-    res.json(games);
+    res.json(games.map(withLaunch));
   }),
 );
 
@@ -61,7 +69,7 @@ router.get(
     const id = parseId(req.params.id);
     const [game] = await sql`SELECT * FROM games WHERE id = ${id} AND user_id = ${req.userId}`;
     if (!game) throw new HttpError(404, 'Game not found');
-    res.json(game);
+    res.json(withLaunch(game));
   }),
 );
 

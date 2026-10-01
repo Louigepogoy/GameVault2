@@ -27,13 +27,45 @@ const LAUNCHERS = {
   xbox: { name: 'the Xbox app' },
   'ms-xbox': { name: 'the Xbox app' },
   intent: { name: 'the app' },
+  roblox: { name: 'Roblox', help: 'https://www.roblox.com/download' },
+  minecraft: { name: 'Minecraft', help: 'https://www.minecraft.net/download' },
   https: { name: 'your browser' },
 };
 
 const schemeOf = (url) => /^([a-z][a-z0-9+.-]*):/i.exec(url ?? '')?.[1].toLowerCase() ?? null;
 
 /** Launcher name and help link for a launch link, e.g. { name: 'Steam', help: '...' }. */
-export const launcherFor = (url) => LAUNCHERS[schemeOf(url)] ?? { name: 'its launcher' };
+export function launcherFor(url) {
+  const scheme = schemeOf(url);
+  // Web links: name the site, e.g. "roblox.com".
+  if (scheme === 'https') {
+    try {
+      return { name: new URL(url).hostname.replace(/^www\./, '') };
+    } catch {
+      return LAUNCHERS.https;
+    }
+  }
+  return LAUNCHERS[scheme] ?? { name: 'its launcher' };
+}
+
+/** The link if it can open on this device, else null. */
+function usable(url, device) {
+  const scheme = schemeOf(url);
+  if (!scheme || !LAUNCHERS[scheme]) return null;
+  if (scheme === 'https') return url;
+  if (scheme === 'intent') return device === 'android' ? url : null;
+  // roblox:// and minecraft:// apps exist on phones and computers.
+  if (scheme === 'roblox' || scheme === 'minecraft') return url;
+  return device === 'desktop' ? url : null;
+}
+
+/** From { steam, android, web } options, the one for this device. */
+const fromOptions = (o, device) => {
+  if (!o) return null;
+  if (device === 'desktop') return o.steam || o.web || null;
+  if (device === 'android') return o.android || o.web || null;
+  return o.web || null;
+};
 
 /**
  * The link that opens this game on this device, or null. Uses the game's launch_url,
@@ -42,19 +74,20 @@ export const launcherFor = (url) => LAUNCHERS[schemeOf(url)] ?? { name: 'its lau
  */
 export function launchLinkFor(game, device = deviceKind()) {
   const steamId = STEAM_COVER.exec(game?.cover_url ?? '')?.[1];
-  const url = game?.launch_url || (steamId ? `steam://rungameid/${steamId}` : null);
-  const scheme = schemeOf(url);
-  if (!scheme || !LAUNCHERS[scheme]) return null;
-  if (scheme === 'https') return url;
-  if (scheme === 'intent') return device === 'android' ? url : null;
-  return device === 'desktop' ? url : null;
+  const own = game?.launch_url || (steamId ? `steam://rungameid/${steamId}` : null);
+  // Games saved without a link (or with one for another device) can still open
+  // through the server's suggestion for known titles.
+  return (own && usable(own, device)) || usable(fromOptions(game?.suggested_launch, device), device);
 }
 
-/** From { steam, android } launch options, the one that fits the chosen platform. */
+/**
+ * From { steam, android, web } launch options, the one to save for the chosen platform.
+ * A PC game never gets an Android-only link (it couldn't open there), and vice versa.
+ */
 export function pickLaunch(launch, platform) {
   if (!launch) return null;
   const mobile = /android|ios|iphone|mobile/i.test(platform ?? '');
-  return (mobile ? launch.android : launch.steam) ?? launch.steam ?? launch.android ?? null;
+  return (mobile ? launch.android : launch.steam) || launch.web || null;
 }
 
 /** Follow a launch link. Web links open in a new tab; launcher links hand off to the app. */

@@ -71,6 +71,8 @@ const LAUNCH_SCHEMES = new Set([
   'xbox', // Xbox app
   'ms-xbox', // Xbox app
   'intent', // Android apps (Chrome on Android)
+  'roblox', // Roblox app
+  'minecraft', // Minecraft (Bedrock)
 ]);
 
 const validators = {

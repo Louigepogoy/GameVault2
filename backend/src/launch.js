@@ -1,4 +1,5 @@
 // Links that open a game in its launcher or as an app, used for "Start playing".
+import { CATALOG } from './data/catalog.js';
 
 /** Opens (and if needed installs) a Steam game in the Steam client. */
 export const steamLaunchUrl = (appId) => `steam://rungameid/${appId}`;
@@ -18,12 +19,31 @@ export function androidLaunchUrl(pkg) {
 /** Package name from a Google Play link, or null. */
 export const playPackage = (url) => /[?&]id=([A-Za-z0-9._]+)/.exec(url ?? '')?.[1] ?? null;
 
-/** { steam, android } launch links for a catalog game (either may be null). */
+/** { steam, android, web } launch links for a catalog game (any may be null). */
 export function catalogLaunch(item) {
   const play = item.links?.find((l) => l.label === 'Google Play');
   const pkg = play ? playPackage(play.url) : null;
   return {
     steam: item.steamId ? steamLaunchUrl(item.steamId) : null,
     android: pkg ? androidLaunchUrl(pkg) : null,
+    web: item.webLaunch ?? null,
   };
+}
+
+const norm = (s) =>
+  (s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+const byTitle = new Map(CATALOG.map((g) => [norm(g.title), g]));
+
+/**
+ * Launch links for a game saved without one (e.g. added before launch links existed),
+ * found by matching its title to a known game. Null if unknown.
+ */
+export function suggestedLaunch(title) {
+  const item = byTitle.get(norm(title));
+  if (!item) return null;
+  const launch = catalogLaunch(item);
+  return launch.steam || launch.android || launch.web ? launch : null;
 }
