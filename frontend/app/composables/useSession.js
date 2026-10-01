@@ -1,4 +1,5 @@
 import { formatDuration } from '~/utils/constants';
+import { launchLinkFor, launcherFor, openLaunchLink } from '~/utils/launch';
 
 /**
  * The running play session, shared by every page.
@@ -60,7 +61,29 @@ export function useSession() {
     }
   }
 
-  async function start(game) {
+  /**
+   * Open the game itself (Steam, another launcher, or the Android app) if it has a link
+   * for this device. Returns true if there was something to open.
+   */
+  function openGame(game, { timerStarted = false } = {}) {
+    const link = launchLinkFor(game);
+    if (!link) return false;
+    const { name, help } = launcherFor(link);
+    openLaunchLink(link);
+    toast.success(
+      `${timerStarted ? '▶️ Timer started. ' : ''}Opening "${game.title}"${name === 'the app' ? '' : ` in ${name}`}…`,
+      {
+        duration: 6000,
+        // Browsers can't tell us whether the launcher opened, so offer help instead of guessing.
+        ...(help && {
+          action: { label: 'Not opening?', onClick: () => window.open(help, '_blank', 'noopener') },
+        }),
+      },
+    );
+    return true;
+  }
+
+  async function start(game, { launch = true } = {}) {
     if (active.value?.game_id === game.id) return active.value;
     // Switching games: save the current session first.
     if (active.value && !(await stop({ quiet: true }))) return null;
@@ -70,7 +93,9 @@ export function useSession() {
       syncClock(now);
       active.value = session;
       version.value++; // a backlog game becomes "playing"
-      toast.success(`▶️ Timer started for "${game.title}". Have fun!`);
+      if (!(launch && openGame(game, { timerStarted: true }))) {
+        toast.success(`▶️ Timer started for "${game.title}". Have fun!`);
+      }
       return session;
     } catch (err) {
       toast.error(err.message);
@@ -98,5 +123,18 @@ export function useSession() {
     }
   }
 
-  return { active, loaded, skewMs, busy, version, justStopped, refresh, reset, start, stop, discard };
+  return {
+    active,
+    loaded,
+    skewMs,
+    busy,
+    version,
+    justStopped,
+    refresh,
+    reset,
+    start,
+    stop,
+    discard,
+    openGame,
+  };
 }

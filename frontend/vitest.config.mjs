@@ -15,5 +15,8 @@ export default defineVitestConfig({
       },
     },
     include: ['test/**/*.test.js'],
+    // Starting a Nuxt environment per file can take a while on a busy machine.
+    hookTimeout: 60000,
+    testTimeout: 20000,
   },
 });

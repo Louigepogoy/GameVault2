@@ -52,8 +52,26 @@ describe('GameFormModal validation', () => {
       rating: null,
       hours_played: 12.5,
       cover_url: 'https://example.com/hades.jpg',
+      launch_url: null,
       notes: null,
     });
+  });
+
+  it('rejects a launch link that is not a link', async () => {
+    const wrapper = await mountForm();
+    await wrapper.find('#f-title').setValue('Hades');
+    await wrapper.find('#f-launch').setValue('open hades please');
+    await wrapper.find('form').trigger('submit');
+    expect(wrapper.text()).toContain('Paste a launcher link');
+    expect(wrapper.emitted('submit')).toBeUndefined();
+  });
+
+  it('keeps a pasted launcher link', async () => {
+    const wrapper = await mountForm();
+    await wrapper.find('#f-title').setValue('Hades');
+    await wrapper.find('#f-launch').setValue(' steam://rungameid/1145360 ');
+    await wrapper.find('form').trigger('submit');
+    expect(wrapper.emitted('submit')[0][0].launch_url).toBe('steam://rungameid/1145360');
   });
 
   it('fills the form when editing a game', async () => {

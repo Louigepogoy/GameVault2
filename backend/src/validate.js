@@ -15,6 +15,24 @@ const optionalText = (value, field, max) => {
   return trimmed || null;
 };
 
+// Launch links the app is allowed to open. Anything else (javascript:, file:, data:...)
+// is rejected, since the browser follows this link when you press "Start playing".
+const LAUNCH_SCHEMES = new Set([
+  'https',
+  'steam', // Steam
+  'com.epicgames.launcher', // Epic Games
+  'heroic', // Heroic (Epic/GOG on Linux)
+  'goggalaxy', // GOG Galaxy
+  'battlenet', // Battle.net
+  'uplay', // Ubisoft Connect
+  'origin2', // EA app (legacy Origin links)
+  'eadm', // EA app
+  'riotclient', // Riot (VALORANT, League)
+  'xbox', // Xbox app
+  'ms-xbox', // Xbox app
+  'intent', // Android apps (Chrome on Android)
+]);
+
 const validators = {
   title(value) {
     if (typeof value !== 'string' || !value.trim()) throw new HttpError(400, 'Title is required');
@@ -52,6 +70,15 @@ const validators = {
     return url;
   },
   notes: (v) => optionalText(v, 'notes', 5000),
+  launch_url(value) {
+    const url = optionalText(value, 'launch_url', 2000);
+    if (!url) return null;
+    const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(url)?.[1].toLowerCase();
+    if (!LAUNCH_SCHEMES.has(scheme)) {
+      throw new HttpError(400, 'launch_url must be a game launcher link (like steam://...) or an https link');
+    }
+    return url;
+  },
 };
 
 // Whitelist of writable columns; PATCH only ever interpolates these names into SQL.

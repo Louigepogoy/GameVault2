@@ -1,6 +1,7 @@
 <script setup>
 import { CheckCircle2, Gamepad2, Star } from 'lucide-vue-next';
 import { GENRES, PLATFORMS, STATUSES } from '~/utils/constants';
+import { pickLaunch } from '~/utils/launch';
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -17,11 +18,12 @@ const empty = () => ({
   rating: null,
   hours_played: '',
   cover_url: '',
+  launch_url: '',
   notes: '',
 });
 
 const form = reactive(empty());
-const errors = reactive({ title: '', cover_url: '', hours_played: '' });
+const errors = reactive({ title: '', cover_url: '', hours_played: '', launch_url: '' });
 const previewFailed = ref(false);
 const filledNote = ref('');
 
@@ -39,6 +41,7 @@ watch(
     );
     errors.title = '';
     errors.cover_url = '';
+    errors.launch_url = '';
     errors.hours_played = '';
     filledNote.value = '';
   },
@@ -63,6 +66,11 @@ function onPick(game) {
     form.genre = game.genre;
     filled.push('genre');
   }
+  const launch = pickLaunch(game.launch, form.platform || game.platform);
+  if (launch && !form.launch_url.trim()) {
+    form.launch_url = launch;
+    filled.push('launch link');
+  }
   if (game.platform && !form.platform.trim()) {
     form.platform = game.platform;
     filled.push('platform');
@@ -81,7 +89,12 @@ function submit() {
   const hours = form.hours_played === '' || form.hours_played === null ? null : Number(form.hours_played);
   errors.hours_played =
     hours !== null && !(hours >= 0 && hours <= 100000) ? 'Enter hours from 0 to 100,000.' : '';
-  if (errors.title || errors.cover_url || errors.hours_played) return;
+  // The server checks the full list of allowed launchers; this catches typos early.
+  errors.launch_url =
+    form.launch_url.trim() && !/^[a-z][a-z0-9+.-]*:\S+$/i.test(form.launch_url.trim())
+      ? 'Paste a launcher link like steam://rungameid/1145360.'
+      : '';
+  if (errors.title || errors.cover_url || errors.hours_played || errors.launch_url) return;
 
   emit('submit', {
     title: form.title.trim(),
@@ -91,6 +104,7 @@ function submit() {
     rating: form.rating,
     hours_played: hours,
     cover_url: form.cover_url.trim() || null,
+    launch_url: form.launch_url.trim() || null,
     notes: form.notes.trim() || null,
   });
 }
@@ -228,6 +242,28 @@ function submit() {
       </div>
 
       <div class="group">
+        <label for="f-launch">Launch link <span class="optional">(optional)</span></label>
+        <input
+          id="f-launch"
+          v-model="form.launch_url"
+          class="field"
+          :class="{ invalid: errors.launch_url }"
+          type="text"
+          inputmode="url"
+          placeholder="steam://rungameid/..."
+          autocomplete="off"
+          spellcheck="false"
+          :aria-invalid="!!errors.launch_url"
+          aria-describedby="f-launch-help f-launch-err"
+        />
+        <p v-if="errors.launch_url" id="f-launch-err" class="error">{{ errors.launch_url }}</p>
+        <p v-else id="f-launch-help" class="help">
+          Opens the game when you press Start playing. Filled in for Steam games; for others, paste the link
+          from your launcher (Epic, GOG, Battle.net...).
+        </p>
+      </div>
+
+      <div class="group">
         <label for="f-notes">Notes</label>
         <textarea
           id="f-notes"
@@ -288,6 +324,18 @@ label,
 
 .field.invalid {
   border-color: var(--red);
+}
+
+.optional {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.help {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .filled {

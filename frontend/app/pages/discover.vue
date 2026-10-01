@@ -1,5 +1,6 @@
 <script setup>
 import { ArrowLeft, Search, Sparkles, X } from 'lucide-vue-next';
+import { pickLaunch } from '~/utils/launch';
 
 useHead({ title: 'Discover · GameVault' });
 
@@ -87,6 +88,8 @@ async function addToVault(game, platform = game.platforms[0]) {
       genre: game.genre,
       status: 'backlog',
       cover_url: game.cover_url,
+      // Steam link for PC, Android link for phones (Start playing opens the game).
+      launch_url: pickLaunch(game.launch, platform),
       notes: game.summary,
     });
     // useAsyncData data is shallow, so swap in new objects instead of mutating.

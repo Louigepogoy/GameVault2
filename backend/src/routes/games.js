@@ -70,10 +70,11 @@ router.post(
   wrap(async (req, res) => {
     const g = validateGame(req.body);
     const [game] = await sql`
-    INSERT INTO games (user_id, title, platform, genre, status, favorite, rating, hours_played, cover_url, notes)
+    INSERT INTO games (user_id, title, platform, genre, status, favorite, rating, hours_played, cover_url, notes, launch_url)
     VALUES (
       ${req.userId}, ${g.title}, ${g.platform ?? null}, ${g.genre ?? null}, ${g.status ?? 'backlog'},
-      ${g.favorite ?? false}, ${g.rating ?? null}, ${g.hours_played ?? null}, ${g.cover_url ?? null}, ${g.notes ?? null}
+      ${g.favorite ?? false}, ${g.rating ?? null}, ${g.hours_played ?? null}, ${g.cover_url ?? null}, ${g.notes ?? null},
+      ${g.launch_url ?? null}
     )
     RETURNING *
   `;

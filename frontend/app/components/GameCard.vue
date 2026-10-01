@@ -1,6 +1,7 @@
 <script setup>
 import { Clock, Gamepad2, Heart, Pencil, Play, Square, Star, Trash2 } from 'lucide-vue-next';
 import { STATUS_LABELS, formatHours, timeAgo } from '~/utils/constants';
+import { launchLinkFor } from '~/utils/launch';
 
 const props = defineProps({
   game: { type: Object, required: true },
@@ -9,6 +10,13 @@ const emit = defineEmits(['toggle-favorite', 'edit', 'delete', 'open', 'play', '
 
 const { active, busy } = useSession();
 const isPlaying = computed(() => active.value?.game_id === props.game.id);
+// Can "Start playing" also open the game on this device? (Checked in the browser only.)
+const launchable = ref(false);
+onMounted(() => (launchable.value = !!launchLinkFor(props.game)));
+watch(
+  () => [props.game.launch_url, props.game.cover_url],
+  () => (launchable.value = !!launchLinkFor(props.game)),
+);
 
 // "Added 3 days ago". Set after mount so server and browser clocks can't disagree.
 const added = ref('');
@@ -111,7 +119,7 @@ onMounted(() => {
           class="icon-btn play-btn"
           :disabled="busy"
           :aria-label="`Start playing ${game.title}`"
-          title="Start a play session"
+          :title="launchable ? 'Start the timer and open the game' : 'Start a play session'"
           @click="emit('play', game)"
         >
           <Play :size="18" />

@@ -75,3 +75,6 @@ CREATE TABLE IF NOT EXISTS user_achievements (
   unlocked_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, code)
 );
+
+-- Link that opens the game itself (steam://rungameid/..., an Android intent, a launcher link...).
+ALTER TABLE games ADD COLUMN IF NOT EXISTS launch_url TEXT;

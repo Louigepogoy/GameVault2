@@ -1,6 +1,7 @@
 <script setup>
-import { Clock, Gamepad2, History, Pencil, Play, Square, Star } from 'lucide-vue-next';
+import { Clock, ExternalLink, Gamepad2, History, Pencil, Play, Square, Star } from 'lucide-vue-next';
 import { STATUS_LABELS, formatDuration, formatHours } from '~/utils/constants';
+import { launchLinkFor, launcherFor } from '~/utils/launch';
 
 // Details for one game: info, play/stop, and its play session history.
 const props = defineProps({
@@ -10,7 +11,10 @@ const props = defineProps({
 const emit = defineEmits(['close', 'edit']);
 
 const api = useApi();
-const { active, busy, version, start, stop } = useSession();
+const { active, busy, version, start, stop, openGame } = useSession();
+
+// Launch link for this device (Steam on a computer, the app on Android), if any.
+const launchLink = computed(() => (props.game ? launchLinkFor(props.game) : null));
 
 const PAGE_SIZE = 8;
 const sessions = ref([]);
@@ -116,6 +120,10 @@ watch(
           Edit
         </button>
       </div>
+      <button v-if="launchLink" type="button" class="btn btn-ghost open-game" @click="openGame(game)">
+        <ExternalLink :size="16" />
+        Open in {{ launcherFor(launchLink).name }} without the timer
+      </button>
 
       <section class="history" aria-labelledby="history-title">
         <div class="history-head">
@@ -232,6 +240,11 @@ watch(
   grid-template-columns: 1.6fr 1fr;
   gap: 10px;
   margin-top: 16px;
+}
+
+.open-game {
+  width: 100%;
+  margin-top: 10px;
 }
 
 .btn-stop {

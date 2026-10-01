@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { sql } from '../db.js';
 import { CATALOG } from '../data/catalog.js';
 import { currentHeader, watchSteamArt } from '../data/steamArt.js';
+import { catalogLaunch } from '../launch.js';
 
 const router = Router();
 
@@ -43,7 +44,14 @@ router.get('/', async (req, res, next) => {
       }
       const { steamId, ...rest } = item; // internal only
       const image_url = (steamId && currentHeader(steamId)) || item.image_url;
-      return { ...rest, image_url, in_vault: owned.has(norm(item.title)), match: reason, score };
+      return {
+        ...rest,
+        image_url,
+        launch: catalogLaunch(item),
+        in_vault: owned.has(norm(item.title)),
+        match: reason,
+        score,
+      };
     });
 
     const recommended = items

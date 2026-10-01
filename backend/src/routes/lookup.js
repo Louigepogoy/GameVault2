@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { CATALOG } from '../data/catalog.js';
+import { catalogLaunch, steamLaunchUrl } from '../launch.js';
 import { HttpError } from '../validate.js';
 
 // GET /api/lookup?q=  →  games matching a title, with cover art, genre and platform,
@@ -57,6 +58,7 @@ function searchCatalog(q) {
     platform: g.platforms[0],
     year: g.year,
     source: 'GameVault',
+    launch: catalogLaunch(g),
   }));
 }
 
@@ -87,6 +89,7 @@ async function searchSteam(q) {
           platform: 'PC',
           year,
           source: 'Steam',
+          launch: { steam: steamLaunchUrl(item.id), android: null },
         };
       } catch {
         return null;
@@ -116,6 +119,7 @@ async function searchAppStore(q) {
       platform: null, // usually on both Android and iOS; let the user choose
       year: Number(r.releaseDate?.slice(0, 4)) || null,
       source: 'App Store',
+      launch: { steam: null, android: null },
     }));
 }
 
